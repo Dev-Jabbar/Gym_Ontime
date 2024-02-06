@@ -227,29 +227,29 @@ const Dashboard = (props: Props) => {
   return (
     <div className="pt-24  py-5  bg-gray-300 w-full  md:px-16 px-4">
       <div className="grid md:grid-cols-2 md:gap-x-10 grid-cols-1 gap-y-10  ">
-        <div className="h-[50rem]   flex space-y-8 flex-col">
+        <div className="h-[50rem] 2xl:h-[75rem]   flex space-y-8 flex-col ">
           <div className=" w-full h-[50%] space-y-4 flex flex-col ">
             <div
               className="h-[50%] w-full bg-cover bg-center"
               style={{ backgroundImage: 'url("/gym5.gif")' }}
             >
               <div className="z-10 w-full h-full text-gray-400 flex justify-center flex-col space-y-2  pl-5">
-                <div className="md:text-sm text-xs font-extrabold">
+                <div className="md:text-sm text-xs 2xl:text-xl font-extrabold">
                   Members: 1480
                 </div>
-                <div className="md:text-sm text-xs font-extrabold">
+                <div className="md:text-sm text-xs 2xl:text-xl font-extrabold">
                   Trainers: 20
                 </div>
               </div>
             </div>
 
-            <div className="h-[50%] w-full  flex space-x-4">
+            <div className="h-[50%]  w-full  flex space-x-4">
               <div className="h-full w-[50%] bg-white  flex justify-center items-center">
                 <div className="flex md:space-x-4 space-x-2  ">
-                  <span className=" font-extrabold md:text-base text-[0.6rem]  ">
+                  <span className=" font-extrabold md:text-base text-[0.6rem] 2xl:text-2xl  ">
                     Total Community
                   </span>
-                  <span className="italic text-gray-600 outline-dotted outline-4 outline-gray-300 md:p-5 p-1">
+                  <span className="italic text-gray-600 outline-dotted outline-4 2xl:text-2xl outline-gray-300 md:p-5 p-1">
                     1500
                   </span>
                 </div>
@@ -271,11 +271,11 @@ const Dashboard = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className=" w-full pb-6 px-6 pt-6  h-[50%] bg-white ">
+          <div className=" w-full pb-6 2xl:pb-10 px-6 pt-6  h-[50%] bg-white ">
             <div className="pb-2 border-b-[0.2px] flex space-x-4  border-gray-300">
-              <h1 className="font-bold text-xs">NEWEST SIGNUPS</h1>
+              <h1 className="font-bold text-xs 2xl:text-2xl">NEWEST SIGNUPS</h1>
 
-              <span className="md:text-xs text-[0.6rem] font-bold text-gray-300 italic">
+              <span className="md:text-xs text-[0.6rem] 2xl:text-xl font-bold text-gray-300 italic">
                 WELCOME FITFAM
               </span>
             </div>
@@ -299,12 +299,12 @@ const Dashboard = (props: Props) => {
                           />
                         </div>
 
-                        <div className="md:text-xs text-[0.6rem] text-gray-500 font-bold">
+                        <div className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-500 font-bold">
                           {member.name}
                         </div>
                       </div>
 
-                      <span className="md:text-xs text-[0.6rem] text-gray-400 font-bold">
+                      <span className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-400 font-bold">
                         {member.time}
                       </span>
                     </div>
@@ -314,21 +314,21 @@ const Dashboard = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="h-[50rem]  bg-white pb-9 ">
+        <div className="h-[50rem] 2xl:h-[75rem] bg-white pb-9 2xl:pb-20 ">
           <div className=" w-full pb-6 px-6 pt-6  h-full bg-white  ">
-            <h2 className="font-bold text-xs mb-4">CLASSES</h2>
+            <h2 className="font-bold text-xs mb-4 2xl:text-xl">CLASSES</h2>
             <div className="flex w-full justify-between border-gray-300 border-b-[0.2px] ">
               <div className="pb-2  flex space-x-4  ">
-                <h2 className="font-bold md:text-xs text-[0.6rem] italic text-gray-500">
+                <h2 className="font-bold md:text-xs 2xl:text-xl text-[0.6rem] italic text-gray-500">
                   TODAY
                 </h2>
 
-                <span className="md:text-xs text-[0.6rem] font-bold text-gray-300 italic">
+                <span className="md:text-xs text-[0.6rem] 2xl:text-xl font-bold text-gray-300 italic">
                   April 08 2020
                 </span>
               </div>
 
-              <span className="md:text-xs text-[0.6rem] font-bold text-gray-300 italic">
+              <span className="md:text-xs text-[0.6rem] 2xl:text-xl font-bold text-gray-300 italic">
                 Used Capacity:{calculateUsedCapacityPercentage()}%
               </span>
             </div>
@@ -342,11 +342,11 @@ const Dashboard = (props: Props) => {
                       className="flex py-2 border-b-[0.2px]  pr-4 items-center justify-between w-full"
                     >
                       <div className=" flex items-center justify-between w-full  ">
-                        <div className="md:text-xs text-[0.6rem] text-gray-400 font-bold">
+                        <div className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-400 font-bold">
                           {myclass.time}
                         </div>
 
-                        <div className="md:text-xs text-[0.6rem] text-gray-500    flex space-x-2 font-bold">
+                        <div className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-500    flex space-x-2 font-bold">
                           <span
                             className={classNames("", {
                               "rounded-full bg-green-900 h-3 shadow-red-700 w-3  animate-pulse":
@@ -358,7 +358,7 @@ const Dashboard = (props: Props) => {
                           </span>
                         </div>
 
-                        <span className="md:text-xs text-[0.6rem] text-blue-400 font-bold ">
+                        <span className="md:text-xs text-[0.6rem] 2xl:text-xl text-blue-400 font-bold ">
                           ({myclass.capacity}/20)
                         </span>
                       </div>

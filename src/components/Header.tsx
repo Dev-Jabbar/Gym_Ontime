@@ -33,7 +33,9 @@ const Header = (props: Props) => {
           }`}
         >
           <Link href="/">
-            <div className=" font-extrabold text-xl  md:hidden">Gym_Ontime</div>
+            <div className=" font-extrabold lg:text-xl   md:hidden">
+              Gym_Ontime
+            </div>
           </Link>
 
           <Link href="/dashboard">
@@ -55,12 +57,12 @@ const Header = (props: Props) => {
       </div>
 
       <Link href="/">
-        <div className=" font-extrabold text-xl hidden md:block">
+        <div className=" font-extrabold lg:text-xl 2xl:text-3xl hidden md:block">
           Gym_Ontime
         </div>
       </Link>
 
-      <div className=" space-x-10 items-center hidden md:flex">
+      <div className=" lg:space-x-10 md:space-x-2 items-center hidden 2xl:text-2xl md:flex">
         <div className="flex items-center space-x-2 ">
           <span className="p-1 bg-gray-400 rounded-full">
             <ArrowDownIcon className="w-3 h-3 text-black "></ArrowDownIcon>
@@ -96,7 +98,7 @@ const Header = (props: Props) => {
           </Link>
         </div> */}
       </div>
-      <div className="flex space-x-4 md:items-center text-sm">
+      <div className="flex space-x-4 md:items-center text-sm 2xl:text-lg">
         <span className="bg-orange-500 hidden md:block px-4 hover:bg-blue-500 cursor-pointer py-2 rounded-md ">
           Payments
         </span>

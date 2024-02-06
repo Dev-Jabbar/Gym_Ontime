@@ -13,7 +13,7 @@ const MyModal: React.FC<Props> = ({ open, onClose, children }) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogContent className="bg-gray-400">
-        <div className="p-4 bg-gray-400">{children}</div>
+        <div className="md:p-4 bg-gray-400">{children}</div>
       </DialogContent>
     </Dialog>
   );

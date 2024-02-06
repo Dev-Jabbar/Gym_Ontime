@@ -27,7 +27,7 @@ const MemberModal = ({ open, onClose, userForModal }: Props) => {
         <span className=" bg-yellow-500 text-sm text-black p-1">
           {userForModal?.type}
         </span>
-        <div className="h-[400px] w-[270px] flex flex-col items-center  space-y-4">
+        <div className="h-[400px] md:w-[270px] flex flex-col items-center  space-y-4">
           <div className="h-[155px] w-[155px] flex justify-center items-center border-4 border-purple-600 rounded-full ">
             <div className="  h-[150px] w-[150px] border-8 border-black rounded-full overflow-hidden  ">
               <Image
