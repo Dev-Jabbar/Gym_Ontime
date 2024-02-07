@@ -18,7 +18,7 @@ const WhatWeOffer = (props: Props) => {
           <Image
             width={500}
             height={500}
-            src="/class_booking.jpg"
+            src="/class_booking.png"
             alt="arnold Image"
             className="w-full h-full"
           />
@@ -47,7 +47,7 @@ const WhatWeOffer = (props: Props) => {
           <Image
             width={500}
             height={500}
-            src="/UserProfiles.jpg"
+            src="/UserProfiles.png"
             alt="arnold Image"
             className="w-full h-full"
           />
@@ -91,7 +91,7 @@ const WhatWeOffer = (props: Props) => {
           <Image
             width={500}
             height={500}
-            src="/InstructorProfiles.webp"
+            src="/gym_instructor.png"
             alt="arnold Image"
             className="w-full h-full"
           />
@@ -105,7 +105,7 @@ const WhatWeOffer = (props: Props) => {
           <Image
             width={500}
             height={500}
-            src="/FeedbackandRatings.gif"
+            src="/ratings.png"
             alt="arnold Image"
             className="w-full h-full rounded-full  "
           />
@@ -119,7 +119,7 @@ const WhatWeOffer = (props: Props) => {
           <Image
             width={500}
             height={500}
-            src="/PaymentIntegration.png"
+            src="/stripe.png"
             alt="arnold Image"
             className="w-full h-full "
           />

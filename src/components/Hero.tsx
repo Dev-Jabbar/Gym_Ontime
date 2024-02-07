@@ -23,10 +23,10 @@ const Hero = (props: Props) => {
           </div>
 
           <div className="flex space-x-4  items-center text-sm">
-            <span className="bg-orange-500 md:px-4 2xl:text-2xl px-2 font-light text-white hover:bg-blue-500 cursor-pointer md:py-2 py-1 rounded-md ">
+            <span className="bg-orange-500 md:px-4 2xl:text-2xl md:text-base text-xs px-2 font-light text-white hover:bg-blue-500 cursor-pointer md:py-2 py-1 rounded-md ">
               Get Demo & Pricing
             </span>
-            <span className="bg-gray-500 md:px-4 px-2 2xl:text-2xl rounded-md md:py-2 py-1 cursor-pointer hover:bg-blue-500 text-white opacity-80">
+            <span className="bg-gray-500 md:px-4 px-2 md:text-base text-xs 2xl:text-2xl rounded-md md:py-2 py-1 cursor-pointer hover:bg-blue-500 text-white opacity-80">
               Watch Customer Stories
             </span>
           </div>
