@@ -260,7 +260,7 @@ const Schedule = (props: Props) => {
                 <div className="h-[70%] bg-black">
                   <Image
                     src="/yoga.gif"
-                    alt="classType"
+                    alt="ClassType"
                     height={500}
                     width={500}
                     className="w-full h-full"
