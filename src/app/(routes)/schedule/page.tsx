@@ -36,7 +36,7 @@ const Schedule = (props: Props) => {
     {
       id: 2,
       name: " helen micheal",
-      image: "helen micheal.png",
+      image: "helen micheal.jpg",
       height: "6ft",
       weight: "10lbs",
       email: "momohabduljabbar@gmail.com",
@@ -46,7 +46,7 @@ const Schedule = (props: Props) => {
     {
       id: 3,
       name: "paul smith ",
-      image: "paul smith.png",
+      image: "paul smith.jpg",
       height: "6ft",
       weight: "10lbs",
       email: "momohabduljabbar@gmail.com",
@@ -56,7 +56,7 @@ const Schedule = (props: Props) => {
     {
       id: 4,
       name: "ken ben ",
-      image: "ken ben.png",
+      image: "ken ben.jpg",
       height: "6ft",
       weight: "10lbs",
       email: "momohabduljabbar@gmail.com",

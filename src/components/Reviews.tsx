@@ -18,7 +18,7 @@ const Reviews = (props: Props) => {
           <div className="h-[25rem] w-[20rem] 2xl:h-[35rem] 2xl:w-[30rem] pb-2 px-4 shadow-lg shadow-black flex justify-center bg-white relative">
             <div className="absolute h-[10rem] w-[10rem] rounded-full -top-20  overflow-hidden bg-gray-300">
               <Image
-                src="/paul smith.png"
+                src="/paul smith.jpg"
                 alt="paul smith"
                 height={500}
                 width={500}
@@ -41,7 +41,7 @@ const Reviews = (props: Props) => {
           <div className="h-[25rem] w-[20rem] 2xl:h-[35rem] 2xl:w-[30rem]  pb-2 px-4 shadow-lg shadow-black flex justify-center bg-white relative">
             <div className="absolute h-[10rem] w-[10rem] rounded-full -top-20  overflow-hidden bg-gray-300">
               <Image
-                src="/trevor rowland.png"
+                src="/trevor rowland.jpg"
                 alt="trevor rowland"
                 height={500}
                 width={500}
@@ -64,7 +64,7 @@ const Reviews = (props: Props) => {
           <div className="h-[25rem] w-[20rem] 2xl:h-[35rem] 2xl:w-[30rem]  pb-2 px-4 shadow-lg shadow-black flex justify-center bg-white relative">
             <div className="absolute h-[10rem] w-[10rem] rounded-full -top-20  overflow-hidden bg-gray-300">
               <Image
-                src="/helen micheal.png"
+                src="/helen micheal.jpg"
                 alt="helen micheal"
                 height={500}
                 width={500}
@@ -88,7 +88,7 @@ const Reviews = (props: Props) => {
           <div className="h-[25rem] w-[20rem] 2xl:h-[35rem] 2xl:w-[30rem]  pb-2 px-4 shadow-lg shadow-black flex justify-center bg-white relative">
             <div className="absolute h-[10rem] w-[10rem] rounded-full -top-20  overflow-hidden bg-gray-300">
               <Image
-                src="/ken ben.png"
+                src="/ken ben.jpg"
                 alt="ken ben"
                 height={500}
                 width={500}

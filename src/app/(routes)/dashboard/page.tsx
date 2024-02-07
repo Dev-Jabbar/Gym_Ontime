@@ -15,26 +15,26 @@ const new_members = [
   { id: 1, src: "/christy.png", time: "2 days ago", name: "Christy" },
   {
     id: 2,
-    src: "/helen micheal.png",
+    src: "/helen micheal.jpg",
     time: "18 seconds ago",
     name: "helen micheal",
   },
   { id: 3, src: "/john mark.png", time: "1 minute ago", name: "john mark" },
-  { id: 4, src: "/paul smith.png", time: "1 hour ago", name: "paul smith" },
+  { id: 4, src: "/paul smith.jpg", time: "1 hour ago", name: "paul smith" },
   {
     id: 5,
-    src: "/trevor rowland.png",
+    src: "/trevor rowland.jpg",
     time: " 1 week ago",
     name: "trevor rowland",
   },
-  { id: 6, src: "/ken ben.png", time: "3 days ago", name: "ken ben" },
+  { id: 6, src: "/ken ben.jpg", time: "3 days ago", name: "ken ben" },
   {
     id: 7,
-    src: "/helen micheal.png",
+    src: "/helen micheal.jpg",
     time: "20 minutes ago",
     name: "helen micheal",
   },
-  { id: 8, src: "/paul smith.png", time: "5 hours ago", name: "rowland boy" },
+  { id: 8, src: "/paul smith.jpg", time: "5 hours ago", name: "rowland boy" },
   {
     id: 9,
     src: "/arnold.png",
@@ -234,10 +234,10 @@ const Dashboard = (props: Props) => {
               style={{ backgroundImage: 'url("/gym5.gif")' }}
             >
               <div className="z-10 w-full h-full text-gray-400 flex justify-center flex-col space-y-2  pl-5">
-                <div className="md:text-sm text-xs 2xl:text-xl font-extrabold">
+                <div className="md:text-sm sm:text-xs text-[0.6rem] 2xl:text-xl font-extrabold">
                   Members: 1480
                 </div>
-                <div className="md:text-sm text-xs 2xl:text-xl font-extrabold">
+                <div className="md:text-sm sm:text-xs text-[0.6rem] 2xl:text-xl font-extrabold">
                   Trainers: 20
                 </div>
               </div>
@@ -342,11 +342,11 @@ const Dashboard = (props: Props) => {
                       className="flex py-2 border-b-[0.2px]  pr-4 items-center justify-between w-full"
                     >
                       <div className=" flex items-center justify-between w-full  ">
-                        <div className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-400 font-bold">
+                        <div className="md:text-xs text-[0.5rem] 2xl:text-xl text-gray-400 font-bold">
                           {myclass.time}
                         </div>
 
-                        <div className="md:text-xs text-[0.6rem] 2xl:text-xl text-gray-500    flex space-x-2 font-bold">
+                        <div className="md:text-xs text-[0.5rem] 2xl:text-xl text-gray-500    flex space-x-2 font-bold">
                           <span
                             className={classNames("", {
                               "rounded-full bg-green-900 h-3 shadow-red-700 w-3  animate-pulse":
@@ -358,7 +358,7 @@ const Dashboard = (props: Props) => {
                           </span>
                         </div>
 
-                        <span className="md:text-xs text-[0.6rem] 2xl:text-xl text-blue-400 font-bold ">
+                        <span className="md:text-xs text-[0.5rem] 2xl:text-xl text-blue-400 font-bold ">
                           ({myclass.capacity}/20)
                         </span>
                       </div>
