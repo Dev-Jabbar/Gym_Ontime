@@ -159,6 +159,12 @@ const Schedule = (props: Props) => {
     setOpenModal(true);
   };
 
+  const handleOpenCreateClass = () => {
+    setModalChoice("createClass");
+
+    setOpenModal(true);
+  };
+
   const handleClose = () => {
     setOpenModal(false);
   };
