@@ -258,8 +258,8 @@ const Schedule = (props: Props) => {
               </div>
               <div className="md:w-[50%]  bg-white flex flex-col  space-y-2 p-5 pt-16">
                 <div className="h-[70%] bg-black">
-                  <img
-                    src="/yoga.gif"
+                  <Image
+                    src="/christy.png"
                     alt="ClassType"
                     height={500}
                     width={500}
