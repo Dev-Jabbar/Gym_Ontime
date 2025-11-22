@@ -18,7 +18,9 @@ const Home = (props: Props) => {
           <Hero />
         </div>
 
-        <div className="md:px-16 px-4">
+        <Footer />
+
+        {/**  <div className="md:px-16 px-4">
           <Author />
           <WhatWeOffer />
         </div>
@@ -26,7 +28,7 @@ const Home = (props: Props) => {
         <Reviews />
 
         <BookSession />
-        <Footer />
+        */}
       </div>
     </>
   );
