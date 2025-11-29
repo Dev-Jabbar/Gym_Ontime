@@ -17,12 +17,12 @@ const Home = (props: Props) => {
         <div className="md:px-16 px-4 py-16 pt-32 bg-black  ">
           <Hero />
         </div>
-
+        <Author />
+        <WhatWeOffer />
         <Footer />
 
         {/**  <div className="md:px-16 px-4">
-          <Author />
-          <WhatWeOffer />
+         
         </div>
 
         <Reviews />
