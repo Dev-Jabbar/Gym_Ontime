@@ -38,15 +38,15 @@ const Header = (props: Props) => {
             </div>
           </Link>
 
-          <Link href="/">
+          <Link href="/dashboard">
             <span className="cursor-pointer">Dashboard</span>
           </Link>
 
-          <Link href="/">
+          <Link href="/schedule">
             <span className="cursor-pointer">Schedule</span>
           </Link>
 
-          <Link href="/">
+          <Link href="/members">
             <span className="cursor-pointer">Members</span>
           </Link>
 
