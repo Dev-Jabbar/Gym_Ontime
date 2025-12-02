@@ -19,15 +19,17 @@ const Home = (props: Props) => {
         </div>
         <Author />
         <WhatWeOffer />
+
+        <Reviews />
+
+        <BookSession />
         <Footer />
 
         {/**  <div className="md:px-16 px-4">
          
         </div>
 
-        <Reviews />
-
-        <BookSession />
+       
         */}
       </div>
     </>

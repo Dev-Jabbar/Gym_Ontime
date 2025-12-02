@@ -67,7 +67,7 @@ const Header = (props: Props) => {
           <span className="p-1 bg-gray-400 rounded-full">
             <ArrowDownIcon className="w-3 h-3 text-black "></ArrowDownIcon>
           </span>
-          <Link href="/">
+          <Link href="/dashboard">
             <span className="cursor-pointer">Dashboard</span>
           </Link>
         </div>
@@ -76,7 +76,7 @@ const Header = (props: Props) => {
             <ArrowDownIcon className="w-3 h-3 text-black "></ArrowDownIcon>
           </span>
 
-          <Link href="/">
+          <Link href="/schedule">
             <span className="cursor-pointer">Schedule</span>
           </Link>
         </div>
@@ -84,7 +84,7 @@ const Header = (props: Props) => {
           <span className="p-1 bg-gray-400 rounded-full">
             <ArrowDownIcon className="w-3 h-3 text-black"></ArrowDownIcon>
           </span>
-          <Link href="/">
+          <Link href="/members">
             <span className="cursor-pointer">Members</span>
           </Link>
         </div>
