@@ -1,119 +1,264 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowUpIcon, ArrowDownIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { IoReorderThreeOutline } from "react-icons/io5";
-type Props = {};
+import { usePathname } from "next/navigation";
+import { IoMenu, IoClose } from "react-icons/io5";
+import {
+  TbDashboard,
+  TbCalendar,
+  TbUsers,
+  TbCurrencyNaira,
+  TbUser,
+  TbSettings,
+  TbLogout,
+  TbChevronDown,
+} from "react-icons/tb";
 
-const Header = (props: Props) => {
-  const [isRevealed, setIsRevealed] = useState(false);
+interface HeaderProps {
+  userRole: "admin" | "trainer" | "member";
+  userName?: string;
+  userAvatar?: string;
+}
 
-  const handleButtonClick = () => {
-    setIsRevealed(!isRevealed);
+export default function Header({
+  userRole,
+  userName = "User",
+  userAvatar = "/jabbar2.jpg",
+}: HeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Navigation items based on user role
+  const getNavItems = () => {
+    const baseItems = [
+      {
+        name: "Dashboard",
+        href: "/dashboard",
+        icon: TbDashboard,
+        roles: ["admin", "trainer", "member"],
+      },
+      {
+        name: "Schedule",
+        href: "/schedule",
+        icon: TbCalendar,
+        roles: ["admin", "trainer", "member"],
+      },
+    ];
+
+    const adminItems = [
+      {
+        name: "Members",
+        href: "/members",
+        icon: TbUsers,
+        roles: ["admin", "trainer"],
+      },
+      {
+        name: "Payments",
+        href: "/payments",
+        icon: TbCurrencyNaira,
+        roles: ["admin"],
+      },
+    ];
+
+    const memberItems = [
+      {
+        name: "My Subscriptions",
+        href: "/subscriptions",
+        icon: TbCurrencyNaira,
+        roles: ["member"],
+      },
+    ];
+
+    const trainerItems = [
+      { name: "Trainers", href: "/trainers", icon: TbUsers, roles: ["admin"] },
+    ];
+
+    const allItems = [
+      ...baseItems,
+      ...trainerItems,
+      ...adminItems,
+
+      ...memberItems,
+    ];
+    return allItems.filter((item) => item.roles.includes(userRole));
+  };
+
+  const navItems = getNavItems();
+
+  const isActive = (href: string) => {
+    return pathname === href;
   };
 
   return (
-    <div className="flex  justify-between md:items-center  text-white">
-      <div
-        className={`flex flex-col md:hidden space-y-2 ${
-          isRevealed ? "pb-6 " : ""
-        }`}
-      >
-        <IoReorderThreeOutline
-          className={`md:hidden h-10 w-10 cursor-pointer transition-transform transform ${
-            isRevealed ? "rotate-180" : ""
-          }`}
-          onClick={handleButtonClick}
-        />
-        <div
-          className={`flex flex-col space-y-4 overflow-hidden transition-all duration-300 ${
-            isRevealed ? " opacity-100 max-h-52" : "max-h-0 opacity-0"
-          }`}
-        >
-          <Link href="/">
-            <div className=" font-extrabold lg:text-xl   md:hidden">
-              Gym_Ontime
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black text-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="text-2xl font-extrabold tracking-wide hover:text-orange-400 transition-colors"
+          >
+            Gym<span className="text-orange-500">Ontime</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isActive(item.href)
+                    ? "bg-orange-500 text-white"
+                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop User Menu */}
+          <div className="hidden lg:flex items-center gap-4">
+            {/* Role Badge */}
+            <div className="px-3 py-1 bg-gray-800 rounded-full">
+              <span className="text-xs font-medium text-gray-300 capitalize">
+                {userRole}
+              </span>
             </div>
-          </Link>
 
-          <Link href="/dashboard">
-            <span className="cursor-pointer">Dashboard</span>
-          </Link>
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-700">
+                  <Image
+                    src={userAvatar}
+                    alt={userName}
+                    width={40}
+                    height={40}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <TbChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    profileOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-          <Link href="/schedule">
-            <span className="cursor-pointer">Schedule</span>
-          </Link>
+              {/* Dropdown Menu */}
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200">
+                  <div className="px-4 py-2 border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {userName}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize">
+                      {userRole}
+                    </p>
+                  </div>
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <TbUser className="w-4 h-4" />
+                    Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <TbSettings className="w-4 h-4" />
+                    Settings
+                  </Link>
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    <TbLogout className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
-          <Link href="/members">
-            <span className="cursor-pointer">Members</span>
-          </Link>
-
-          <span className="bg-orange-500  md:hidden px-4 hover:bg-blue-500 cursor-pointer py-2 rounded-md ">
-            Payments
-          </span>
+          {/* Mobile Menu Button */}
+          <button
+            className="lg:hidden text-3xl"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <IoClose /> : <IoMenu />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="lg:hidden mt-4 pb-4 space-y-2">
+            {/* User Info */}
+            <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700">
+                <Image
+                  src={userAvatar}
+                  alt={userName}
+                  width={48}
+                  height={48}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div>
+                <p className="font-semibold">{userName}</p>
+                <p className="text-xs text-gray-400 capitalize">{userRole}</p>
+              </div>
+            </div>
+
+            {/* Navigation Links */}
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  isActive(item.href)
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-900 hover:bg-gray-800"
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </Link>
+            ))}
+
+            {/* Mobile Profile Links */}
+            <div className="pt-4 mt-4 border-t border-gray-800 space-y-2">
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 bg-gray-900 rounded-lg hover:bg-gray-800"
+              >
+                <TbUser className="w-5 h-5" />
+                Profile
+              </Link>
+              <Link
+                href="/settings"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 bg-gray-900 rounded-lg hover:bg-gray-800"
+              >
+                <TbSettings className="w-5 h-5" />
+                Settings
+              </Link>
+              <button className="flex items-center gap-3 w-full px-4 py-3 bg-red-900 text-red-200 rounded-lg hover:bg-red-800">
+                <TbLogout className="w-5 h-5" />
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
-      <Link href="/">
-        <div className=" font-extrabold lg:text-xl 2xl:text-3xl hidden md:block">
-          Gym_Ontime
-        </div>
-      </Link>
-
-      <div className=" lg:space-x-10 md:space-x-2 items-center hidden 2xl:text-2xl md:flex">
-        <div className="flex items-center space-x-2 ">
-          <span className="p-1 bg-gray-400 rounded-full">
-            <ArrowDownIcon className="w-3 h-3 text-black "></ArrowDownIcon>
-          </span>
-          <Link href="/dashboard">
-            <span className="cursor-pointer">Dashboard</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 ">
-          <span className="p-1 bg-gray-400 rounded-full">
-            <ArrowDownIcon className="w-3 h-3 text-black "></ArrowDownIcon>
-          </span>
-
-          <Link href="/schedule">
-            <span className="cursor-pointer">Schedule</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 ">
-          <span className="p-1 bg-gray-400 rounded-full">
-            <ArrowDownIcon className="w-3 h-3 text-black"></ArrowDownIcon>
-          </span>
-          <Link href="/members">
-            <span className="cursor-pointer">Members</span>
-          </Link>
-        </div>
-        {/** <div className="flex items-center space-x-2 ">
-          <span className="p-1 bg-gray-400 rounded-full">
-            <ArrowDownIcon className="w-3 h-3 text-black"></ArrowDownIcon>
-          </span>
-        
-          <Link href="/dashboard">
-            <span className="cursor-pointer">Alert</span>
-          </Link>
-        </div> */}
-      </div>
-      <div className="flex space-x-4 md:items-center text-sm 2xl:text-lg">
-        <span className="bg-orange-500 hidden md:block px-4 hover:bg-blue-500 cursor-pointer py-2 rounded-md ">
-          Payments
-        </span>
-        <span className="bg-gray-200 mt-2 md:mt-0 h-10 overflow-hidden w-10 rounded-full  cursor-pointer text-black">
-          <Image
-            src="/jabbar2.jpg"
-            alt="LoggedInUser"
-            width={500}
-            height={500}
-            className="h-full w-full"
-          />
-        </span>
-      </div>
-    </div>
+    </header>
   );
-};
-
-export default Header;
+}
