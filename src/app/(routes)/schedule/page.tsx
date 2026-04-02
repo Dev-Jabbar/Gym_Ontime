@@ -1,5 +1,5 @@
-import Schedule from "@/components/Schedule";
+import { SchedulePage } from "@/features/schedule";
 
 export default function Page() {
-  return <Schedule userRole="member" />;
+  return <SchedulePage userRole="admin" />;
 }

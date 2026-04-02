@@ -1,5 +1,5 @@
-import Dashboard from "@/components/Dashboard";
+import { DashboardPage } from "@/features/dashboard";
 
-export default function Page() {
-  return <Dashboard userRole="admin" />;
+export default function Dashboard() {
+  return <DashboardPage userRole="admin" />;
 }

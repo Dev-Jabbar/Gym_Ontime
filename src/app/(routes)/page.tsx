@@ -1,8 +1,8 @@
 import Author from "@/components/Author";
 import BookSession from "@/components/BookSession";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+
 import Hero from "@/components/Hero";
+import Footer from "@/components/layout/Footer";
 import Reviews from "@/components/Reviews";
 
 import WhatWeOffer from "@/components/WhatWeOffer";
