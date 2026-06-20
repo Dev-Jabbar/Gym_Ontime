@@ -274,4 +274,8 @@ export const INITIAL_STATS = {
   upcomingClasses: [],
   capacityUsage: 67,
   revenueData: [120000, 190000, 300000, 250000, 420000, 380000, 500000],
+  // ✅ member-specific
+  myUpcomingClasses: 3,
+  myActiveSubscription: "Premium Plan",
+  classesBookedThisMonth: 8,
 };

@@ -25,19 +25,23 @@ interface HeaderProps {
 export default function Header({
   userRole,
   userName = "User",
-  userAvatar = "/jabbar2.jpg",
+  userAvatar,
 }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await fetch("http://localhost:5000/api/users/logout", {
+      method: "POST",
+      credentials: "include", // 👈 required for cookie to be cleared
+    });
+
     setProfileOpen(false);
     setMenuOpen(false);
     router.push("/login");
   };
-
   const getNavItems = () => {
     const baseItems = [
       {
@@ -141,8 +145,11 @@ export default function Header({
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-700">
                   <Image
-                    src={userAvatar}
-                    alt={userName}
+                    src={
+                      userAvatar ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
+                    }
+                    alt={userName || "User"}
                     width={40}
                     height={40}
                     className="object-cover w-full h-full"
@@ -206,8 +213,11 @@ export default function Header({
             <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700">
                 <Image
-                  src={userAvatar}
-                  alt={userName}
+                  src={
+                    userAvatar ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
+                  }
+                  alt={userName || "User"}
                   width={48}
                   height={48}
                   className="object-cover w-full h-full"

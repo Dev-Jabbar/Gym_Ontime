@@ -23,7 +23,7 @@ export const ClassCard = ({ classData }: ClassCardProps) => {
           </div>
           <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
             <TbClock className="w-4 h-4" />
-            {classData.time}
+            {classData.date} • {classData.time}
           </p>
         </div>
         <span
@@ -34,7 +34,11 @@ export const ClassCard = ({ classData }: ClassCardProps) => {
           {classData.status}
         </span>
       </div>
-      <p className="text-sm text-gray-600 mb-2">Trainer: {classData.trainer}</p>
+
+      <p className="text-sm text-gray-600 mb-2">
+        Trainer: {classData.trainer.name}
+      </p>
+
       <div className="flex items-center gap-2">
         <div className="flex-1 bg-gray-200 rounded-full h-2">
           <div

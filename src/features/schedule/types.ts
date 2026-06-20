@@ -27,6 +27,7 @@ export type FilterStatus = "all" | "upcoming" | "ongoing" | "completed";
 export interface ScheduleProps {
   userRole: UserRole;
   userId?: string;
+  trainerProfileId?: string;
 }
 
 export interface ClassCardProps {
@@ -35,12 +36,15 @@ export interface ClassCardProps {
   onBook: (classId: string) => void;
   onEdit?: (classId: string) => void;
   onCancel?: (classId: string) => void;
+  trainerProfileId?: string;
 }
 
 export interface DateNavigatorProps {
-  selectedDate: Date;
+  selectedDate: Date | null; //
   onPreviousDay: () => void;
   onNextDay: () => void;
+  onDateChange: (date: Date) => void;
+  onClearDate: () => void;
 }
 
 export interface SearchFilterProps {

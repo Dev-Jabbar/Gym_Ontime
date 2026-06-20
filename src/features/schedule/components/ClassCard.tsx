@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { TbClock } from "react-icons/tb";
+import { TbClock, TbUsers } from "react-icons/tb";
 import { getStatusBadgeColor, getCapacityColor } from "../utils/formatters";
 import type { ClassCardProps } from "../types";
+import { useRouter } from "next/navigation";
 
 export function ClassCard({
   classData,
@@ -10,21 +11,38 @@ export function ClassCard({
   onBook,
   onEdit,
   onCancel,
+  trainerProfileId,
 }: ClassCardProps) {
   const isFull = classData.enrolled >= classData.capacity;
   const capacityPercentage = (classData.enrolled / classData.capacity) * 100;
+  const router = useRouter();
+
+  // ✅ Check if this is the trainer's own class
+  const isMyClass =
+    userRole === "trainer" &&
+    trainerProfileId &&
+    classData.trainer.id === trainerProfileId;
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
       {/* Status Badge */}
       <div className="p-4 pb-0 flex justify-between items-start">
-        <span
-          className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
-            classData.status
-          )}`}
-        >
-          {classData.status.charAt(0).toUpperCase() + classData.status.slice(1)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
+              classData.status,
+            )}`}
+          >
+            {classData.status.charAt(0).toUpperCase() +
+              classData.status.slice(1)}
+          </span>
+          {/* ✅ My Class badge */}
+          {isMyClass && (
+            <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
+              My Class
+            </span>
+          )}
+        </div>
         {isFull && (
           <span className="text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
             Full
@@ -44,9 +62,18 @@ export function ClassCard({
           <div className="flex items-center gap-1">
             <TbClock className="w-4 h-4" />
             <span>
+              {new Date(classData.schedule).toLocaleDateString("en-NG", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "Africa/Lagos",
+              })}{" "}
+              •{" "}
               {new Date(classData.schedule).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
+                timeZone: "Africa/Lagos",
               })}
             </span>
           </div>
@@ -84,15 +111,15 @@ export function ClassCard({
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${getCapacityColor(
-                capacityPercentage
+                capacityPercentage,
               )}`}
               style={{ width: `${capacityPercentage}%` }}
             ></div>
           </div>
         </div>
 
-        {/* Pricing */}
-        {classData.pricing.oneTime && (
+        {/* ✅ Pricing — hidden for trainer */}
+        {userRole !== "trainer" && classData.pricing.oneTime && (
           <div className="mb-4">
             <p className="text-xs text-gray-500 mb-1">From</p>
             <p className="text-2xl font-bold text-orange-500">
@@ -116,6 +143,17 @@ export function ClassCard({
             }`}
           >
             {isFull ? "Class Full" : "Book Now"}
+          </button>
+        )}
+
+        {/* ✅ Trainer — View Members button only on their classes */}
+        {userRole === "trainer" && isMyClass && (
+          <button
+            onClick={() => router.push(`/members?classId=${classData.id}`)}
+            className="w-full py-3 rounded-lg font-medium transition-colors bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+          >
+            <TbUsers className="w-4 h-4" />
+            View Members
           </button>
         )}
 

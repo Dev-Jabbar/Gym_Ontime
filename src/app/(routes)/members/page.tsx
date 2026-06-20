@@ -1,21 +1,15 @@
-import React from "react";
-import { ProtectedRoute } from "@/features/auth";
-type Props = {};
+"use client";
 
-const page = (props: Props) => {
-  return (
-    <ProtectedRoute>
-      <div className="pt-24 px-16 pb-20 bg-gray-300 h-full">
-        <div className=" text-white bg-gray-600  w-full h-20 mb-20 overflow-auto fixed"></div>
-        <div className="flex flex-col ">
-          <div className=" bg-black  w-full  h-20  border-b-[0.5px] border-white"></div>
-          <div className=" bg-black  w-full  h-20  border-b-[0.5px] border-white"></div>
-          <div className=" bg-black  w-full  h-20  border-b-[0.5px] border-white"></div>
-          <div className=" bg-black  w-full  h-20  border-b-[0.5px] border-white"></div>
-        </div>
-      </div>
-    </ProtectedRoute>
-  );
-};
+import { useUser } from "@/hooks/useUser";
+import { useSearchParams } from "next/navigation";
+import { MembersPage } from "@/features/members";
 
-export default page;
+export default function Page() {
+  const user = useUser();
+  const searchParams = useSearchParams();
+  const classId = searchParams.get("classId");
+
+  if (!user) return null;
+
+  return <MembersPage userRole={user.role} classId={classId} />;
+}

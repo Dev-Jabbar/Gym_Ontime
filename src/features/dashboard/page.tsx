@@ -48,22 +48,23 @@ export function DashboardPage({ userRole }: DashboardProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            icon={<TbUsers className="w-8 h-8" />}
-            title="Total Members"
-            value={stats.totalMembers.toLocaleString()}
-            change="+12%"
-            positive
-          />
-          <StatCard
-            icon={<TbCalendar className="w-8 h-8" />}
-            title="Active Classes"
-            value={stats.activeClasses.toString()}
-            change="+5"
-            positive
-          />
           {userRole === "admin" && (
             <>
+              <StatCard
+                icon={<TbUsers className="w-8 h-8" />}
+                title="Total Members"
+                value={stats.totalMembers.toLocaleString()}
+                change="+12%"
+                positive
+              />
+
+              <StatCard
+                icon={<TbCalendar className="w-8 h-8" />}
+                title="Active Classes"
+                value={stats.activeClasses.toString()}
+                change="+5"
+                positive
+              />
               <StatCard
                 icon={<TbCurrencyNaira className="w-8 h-8" />}
                 title="Monthly Revenue"
@@ -76,6 +77,58 @@ export function DashboardPage({ userRole }: DashboardProps) {
                 title="Capacity Usage"
                 value={`${stats.capacityUsage}%`}
                 change="+3%"
+                positive
+              />
+            </>
+          )}
+
+          {userRole === "member" && (
+            <>
+              <StatCard
+                icon={<TbCalendar className="w-8 h-8" />}
+                title="My Upcoming Classes"
+                value={stats.myUpcomingClasses.toString()}
+                change=""
+                positive
+              />
+              <StatCard
+                icon={<TbCurrencyNaira className="w-8 h-8" />}
+                title="My Active Subscription"
+                value={stats.myActiveSubscription ?? "None"}
+                change=""
+                positive
+              />
+              <StatCard
+                icon={<TbTrendingUp className="w-8 h-8" />}
+                title="Classes Booked This Month"
+                value={stats.classesBookedThisMonth.toString()}
+                change=""
+                positive
+              />
+            </>
+          )}
+
+          {userRole === "trainer" && (
+            <>
+              <StatCard
+                icon={<TbUsers className="w-8 h-8" />}
+                title="My Members"
+                value={stats.totalMembers.toLocaleString()}
+                change=""
+                positive
+              />
+              <StatCard
+                icon={<TbCalendar className="w-8 h-8" />}
+                title="My Active Classes"
+                value={stats.activeClasses.toString()}
+                change=""
+                positive
+              />
+              <StatCard
+                icon={<TbTrendingUp className="w-8 h-8" />}
+                title="Capacity Usage"
+                value={`${stats.capacityUsage}%`}
+                change=""
                 positive
               />
             </>
@@ -95,7 +148,7 @@ export function DashboardPage({ userRole }: DashboardProps) {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">
-                  Today's Classes
+                  Recent & Upcoming
                 </h2>
                 <Link
                   href="/schedule"
@@ -118,7 +171,7 @@ export function DashboardPage({ userRole }: DashboardProps) {
             <CapacityChart capacityUsage={stats.capacityUsage} />
 
             {/* Recent Signups (Admin/Trainer only) */}
-            {(userRole === "admin" || userRole === "trainer") && (
+            {userRole === "admin" && (
               <RecentSignups signups={stats.recentSignups} />
             )}
 

@@ -8,46 +8,57 @@ import {
   SearchFilter,
   ClassCard,
   EmptyState,
+  BookingModal,
 } from "./components";
-import type { ScheduleProps, FilterStatus } from "./types";
+import type { ScheduleProps, FilterStatus, Class } from "./types";
 
-export function SchedulePage({ userRole, userId }: ScheduleProps) {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+export function SchedulePage({
+  userRole,
+  userId,
+  trainerProfileId,
+}: ScheduleProps) {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [bookingClass, setBookingClass] = useState<Class | null>(null);
 
   const { classes, loading } = useSchedule(selectedDate);
   const filteredClasses = useClassFilters(classes, filterStatus, searchQuery);
 
   const handlePreviousDay = () => {
+    if (!selectedDate) return; // ✅ guard against null
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     setSelectedDate(newDate);
   };
 
   const handleNextDay = () => {
+    if (!selectedDate) return; // ✅ guard against null
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     setSelectedDate(newDate);
   };
 
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const handleClearDate = () => {
+    setSelectedDate(null); // ✅ back to showing all
+  };
+
   const handleBookClass = (classId: string) => {
-    console.log("Book class:", classId);
-    // TODO: Implement booking logic
-    // Navigate to payment page or open booking modal
+    const cls = filteredClasses.find((c) => c.id === classId);
+    if (cls) setBookingClass(cls);
   };
 
   const handleEditClass = (classId: string) => {
     console.log("Edit class:", classId);
-    // TODO: Implement edit logic
-    // Open edit modal or navigate to edit page
   };
 
   const handleCancelClass = (classId: string) => {
     console.log("Cancel class:", classId);
-    // TODO: Implement cancel logic
-    // Show confirmation dialog then cancel class
   };
 
   if (loading) {
@@ -89,6 +100,8 @@ export function SchedulePage({ userRole, userId }: ScheduleProps) {
               selectedDate={selectedDate}
               onPreviousDay={handlePreviousDay}
               onNextDay={handleNextDay}
+              onDateChange={handleDateChange}
+              onClearDate={handleClearDate} // ✅
             />
 
             <SearchFilter
@@ -113,9 +126,18 @@ export function SchedulePage({ userRole, userId }: ScheduleProps) {
                 onBook={handleBookClass}
                 onEdit={handleEditClass}
                 onCancel={handleCancelClass}
+                trainerProfileId={trainerProfileId} // ✅ add this
               />
             ))}
           </div>
+        )}
+
+        {/* Booking Modal */}
+        {bookingClass && (
+          <BookingModal
+            classData={bookingClass}
+            onClose={() => setBookingClass(null)}
+          />
         )}
       </div>
     </div>

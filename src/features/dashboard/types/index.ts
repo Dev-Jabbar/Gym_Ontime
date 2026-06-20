@@ -16,7 +16,12 @@ export interface UpcomingClass {
   id: string;
   name: string;
   time: string;
-  trainer: string;
+  date: string;
+  trainer: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
   capacity: number;
   enrolled: number;
   status: ClassStatus;
@@ -31,6 +36,10 @@ export interface DashboardStats {
   upcomingClasses: UpcomingClass[];
   capacityUsage: number;
   revenueData: number[];
+  // ✅ member-specific
+  myUpcomingClasses: number;
+  myActiveSubscription: string | null;
+  classesBookedThisMonth: number;
 }
 
 export interface DashboardProps {

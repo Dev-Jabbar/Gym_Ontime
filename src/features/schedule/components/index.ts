@@ -2,3 +2,4 @@ export { DateNavigator } from "./DateNavigator";
 export { SearchFilter } from "./SearchFilter";
 export { ClassCard } from "./ClassCard";
 export { EmptyState } from "./EmptyState";
+export { BookingModal } from "./BookingModal";
