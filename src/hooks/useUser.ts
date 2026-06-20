@@ -8,6 +8,7 @@ interface User {
   name: string;
   email: string;
   role: "admin" | "trainer" | "member";
+  avatar: string | null;
 }
 
 export function useUser() {
