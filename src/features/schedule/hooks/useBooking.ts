@@ -32,7 +32,7 @@ export const useBooking = (): UseBookingReturn => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/payments/initiate",
+        `${process.env.NEXT_PUBLIC_API_URL}/payments/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

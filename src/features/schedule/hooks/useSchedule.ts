@@ -17,9 +17,12 @@ export function useSchedule(selectedDate: Date | null) {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("http://localhost:5000/api/classes", {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/classes`,
+        {
+          credentials: "include",
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to fetch classes");
 

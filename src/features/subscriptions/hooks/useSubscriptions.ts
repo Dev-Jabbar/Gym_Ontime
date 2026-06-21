@@ -19,7 +19,7 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
     setLoading(true);
     setError(null);
 
-    fetch("http://localhost:5000/api/payments/my-payments", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/my-payments`, {
       credentials: "include",
     })
       .then((res) => {

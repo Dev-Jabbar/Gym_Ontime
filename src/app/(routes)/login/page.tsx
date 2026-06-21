@@ -45,15 +45,18 @@ export default function LoginPage() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // 👈 required for cookies to be set
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // 👈 required for cookies to be set
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        },
+      );
 
       if (!response.ok) {
         throw new Error("Login failed");

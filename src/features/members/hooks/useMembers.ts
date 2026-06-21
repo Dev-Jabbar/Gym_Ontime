@@ -29,14 +29,14 @@ export const useMembers = (
       if (userRole === "trainer") {
         // Fetch only trainer's classes
         const res = await fetch(
-          "http://localhost:5000/api/trainers/my-classes",
+          `${process.env.NEXT_PUBLIC_API_URL}/trainers/my-classes`,
           { credentials: "include" },
         );
         const data = await res.json();
         classes = data.data ?? [];
       } else if (userRole === "admin") {
         // Fetch all classes
-        const res = await fetch("http://localhost:5000/api/classes", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
           credentials: "include",
         });
         classes = await res.json();
@@ -50,7 +50,7 @@ export const useMembers = (
           )
           .map(async (cls: any) => {
             const membersRes = await fetch(
-              `http://localhost:5000/api/classes/${cls._id ?? cls.id}/members`,
+              `${process.env.NEXT_PUBLIC_API_URL}/classes/${cls._id ?? cls.id}/members`,
               { credentials: "include" },
             );
             const membersData = await membersRes.json();

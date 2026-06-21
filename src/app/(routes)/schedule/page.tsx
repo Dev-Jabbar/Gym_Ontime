@@ -12,7 +12,7 @@ export default function Page() {
 
   useEffect(() => {
     if (user?.role === "trainer") {
-      fetch("http://localhost:5000/api/trainers/me", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers/me`, {
         credentials: "include",
       })
         .then((res) => res.json())

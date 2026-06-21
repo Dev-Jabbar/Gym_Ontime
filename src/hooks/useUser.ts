@@ -16,7 +16,7 @@ export function useUser() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/users/me", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       credentials: "include",
     })
       .then((res) => {

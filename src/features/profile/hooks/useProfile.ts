@@ -29,13 +29,19 @@ export const useProfile = (): UseProfileReturn => {
     try {
       let profileRes;
       if (user.role === "member") {
-        profileRes = await fetch("http://localhost:5000/api/members/me", {
-          credentials: "include",
-        });
+        profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/members/me`,
+          {
+            credentials: "include",
+          },
+        );
       } else if (user.role === "trainer") {
-        profileRes = await fetch("http://localhost:5000/api/trainers/me", {
-          credentials: "include",
-        });
+        profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/trainers/me`,
+          {
+            credentials: "include",
+          },
+        );
       } else {
         setProfile({
           id: user.id,
@@ -76,7 +82,7 @@ export const useProfile = (): UseProfileReturn => {
     try {
       // Update name via user endpoint
       if (data.name) {
-        await fetch(`http://localhost:5000/api/users/${user.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -86,7 +92,7 @@ export const useProfile = (): UseProfileReturn => {
 
       // Update member profile
       if (user.role === "member") {
-        await fetch("http://localhost:5000/api/members/me", {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/members/me`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -112,7 +118,7 @@ export const useProfile = (): UseProfileReturn => {
 
       // Update trainer profile
       if (user.role === "trainer") {
-        await fetch("http://localhost:5000/api/trainers/me", {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers/me`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

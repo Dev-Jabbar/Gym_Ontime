@@ -26,10 +26,10 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
     try {
       if (userRole === "member") {
         const [classesRes, paymentsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/classes", {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
             credentials: "include",
           }),
-          fetch("http://localhost:5000/api/payments/my-payments", {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/my-payments`, {
             credentials: "include",
           }),
         ]);
@@ -112,11 +112,13 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         }));
       } else if (userRole === "admin") {
         const [usersRes, classesRes, paymentsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/users", { credentials: "include" }),
-          fetch("http://localhost:5000/api/classes", {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
             credentials: "include",
           }),
-          fetch("http://localhost:5000/api/payments", {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
+            credentials: "include",
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments`, {
             credentials: "include",
           }),
         ]);
@@ -216,7 +218,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         }));
       } else if (userRole === "trainer") {
         const classesRes = await fetch(
-          "http://localhost:5000/api/trainers/my-classes",
+          `${process.env.NEXT_PUBLIC_API_URL}/trainers/my-classes`,
           { credentials: "include" },
         );
 

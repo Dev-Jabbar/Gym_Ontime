@@ -21,9 +21,12 @@ export default function PaymentSuccessPage() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/payments/verify?reference=${reference}`, {
-      credentials: "include",
-    })
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/payments/verify?reference=${reference}`,
+      {
+        credentials: "include",
+      },
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
