@@ -33,7 +33,7 @@ export default function Header({
   const router = useRouter();
 
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/api/users/logout", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, {
       method: "POST",
       credentials: "include", // 👈 required for cookie to be cleared
     });
