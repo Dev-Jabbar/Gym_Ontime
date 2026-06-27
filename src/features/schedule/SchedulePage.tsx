@@ -9,6 +9,9 @@ import {
   ClassCard,
   EmptyState,
   BookingModal,
+  CreateClassModal,
+  EditClassModal,
+  CancelClassDialog,
 } from "./components";
 import type { ScheduleProps, FilterStatus, Class } from "./types";
 
@@ -21,20 +24,25 @@ export function SchedulePage({
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [bookingClass, setBookingClass] = useState<Class | null>(null);
+  const [cancellingClassId, setCancellingClassId] = useState<string | null>(
+    null,
+  );
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
-  const { classes, loading } = useSchedule(selectedDate);
+  const { classes, loading, refetch } = useSchedule(selectedDate);
   const filteredClasses = useClassFilters(classes, filterStatus, searchQuery);
 
   const handlePreviousDay = () => {
-    if (!selectedDate) return; // ✅ guard against null
+    if (!selectedDate) return;
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     setSelectedDate(newDate);
   };
 
   const handleNextDay = () => {
-    if (!selectedDate) return; // ✅ guard against null
+    if (!selectedDate) return;
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     setSelectedDate(newDate);
@@ -45,7 +53,7 @@ export function SchedulePage({
   };
 
   const handleClearDate = () => {
-    setSelectedDate(null); // ✅ back to showing all
+    setSelectedDate(null);
   };
 
   const handleBookClass = (classId: string) => {
@@ -54,11 +62,37 @@ export function SchedulePage({
   };
 
   const handleEditClass = (classId: string) => {
-    console.log("Edit class:", classId);
+    const cls = filteredClasses.find((c) => c.id === classId);
+    if (cls) setEditingClass(cls);
   };
 
   const handleCancelClass = (classId: string) => {
-    console.log("Cancel class:", classId);
+    setCancellingClassId(classId);
+  };
+
+  const confirmCancelClass = async () => {
+    if (!cancellingClassId) return;
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/classes/${cancellingClassId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        setCancelError(data.message || "Failed to cancel class");
+        return;
+      }
+
+      setCancellingClassId(null);
+      setCancelError(null);
+      refetch();
+    } catch (err) {
+      setCancelError("Something went wrong. Please try again.");
+    }
   };
 
   if (loading) {
@@ -101,9 +135,8 @@ export function SchedulePage({
               onPreviousDay={handlePreviousDay}
               onNextDay={handleNextDay}
               onDateChange={handleDateChange}
-              onClearDate={handleClearDate} // ✅
+              onClearDate={handleClearDate}
             />
-
             <SearchFilter
               searchQuery={searchQuery}
               filterStatus={filterStatus}
@@ -126,7 +159,7 @@ export function SchedulePage({
                 onBook={handleBookClass}
                 onEdit={handleEditClass}
                 onCancel={handleCancelClass}
-                trainerProfileId={trainerProfileId} // ✅ add this
+                trainerProfileId={trainerProfileId}
               />
             ))}
           </div>
@@ -137,6 +170,42 @@ export function SchedulePage({
           <BookingModal
             classData={bookingClass}
             onClose={() => setBookingClass(null)}
+          />
+        )}
+
+        {/* Create Class Modal */}
+        {showCreateModal && (
+          <CreateClassModal
+            onClose={() => setShowCreateModal(false)}
+            onSuccess={() => {
+              setShowCreateModal(false);
+              refetch();
+            }}
+          />
+        )}
+
+        {/* Edit Class Modal */}
+        {editingClass && (
+          <EditClassModal
+            classData={editingClass}
+            onClose={() => setEditingClass(null)}
+            onSuccess={() => {
+              setEditingClass(null);
+              refetch();
+            }}
+          />
+        )}
+
+        {/* Cancel Confirmation Dialog */}
+
+        {cancellingClassId && (
+          <CancelClassDialog
+            error={cancelError}
+            onConfirm={confirmCancelClass}
+            onClose={() => {
+              setCancellingClassId(null);
+              setCancelError(null);
+            }}
           />
         )}
       </div>

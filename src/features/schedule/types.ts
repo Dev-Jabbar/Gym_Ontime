@@ -12,6 +12,8 @@ export interface Class {
     oneTime?: number;
     weekly?: number;
     monthly?: number;
+    quarterly?: number;
+    biannual?: number;
     yearly?: number;
   };
   capacity: number;

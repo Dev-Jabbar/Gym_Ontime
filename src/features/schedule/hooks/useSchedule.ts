@@ -54,7 +54,7 @@ export function useSchedule(selectedDate: Date | null) {
     }
   };
 
-  return { classes, loading, error };
+  return { classes, loading, error, refetch: fetchClasses };
 }
 
 export function useClassFilters(
