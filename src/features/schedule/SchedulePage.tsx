@@ -74,7 +74,7 @@ export function SchedulePage({
     if (!cancellingClassId) return;
     try {
       const res = await fetch(
-        `http://localhost:5000/api/classes/${cancellingClassId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/classes/${cancellingClassId}`,
         {
           method: "DELETE",
           credentials: "include",

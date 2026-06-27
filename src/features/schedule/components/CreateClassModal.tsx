@@ -83,26 +83,29 @@ export function CreateClassModal({
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/classes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: data.name,
-          description: data.description,
-          schedule: new Date(data.schedule).toISOString(),
-          duration: Number(data.duration),
-          capacity: Number(data.capacity),
-          pricing: {
-            ...(data.oneTime && { oneTime: Number(data.oneTime) }),
-            ...(data.weekly && { weekly: Number(data.weekly) }),
-            ...(data.monthly && { monthly: Number(data.monthly) }),
-            ...(data.quarterly && { quarterly: Number(data.quarterly) }),
-            ...(data.biannual && { biannual: Number(data.biannual) }),
-            ...(data.yearly && { yearly: Number(data.yearly) }),
-          },
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/classes`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name: data.name,
+            description: data.description,
+            schedule: new Date(data.schedule).toISOString(),
+            duration: Number(data.duration),
+            capacity: Number(data.capacity),
+            pricing: {
+              ...(data.oneTime && { oneTime: Number(data.oneTime) }),
+              ...(data.weekly && { weekly: Number(data.weekly) }),
+              ...(data.monthly && { monthly: Number(data.monthly) }),
+              ...(data.quarterly && { quarterly: Number(data.quarterly) }),
+              ...(data.biannual && { biannual: Number(data.biannual) }),
+              ...(data.yearly && { yearly: Number(data.yearly) }),
+            },
+          }),
+        },
+      );
 
       const result = await response.json();
       if (!response.ok)

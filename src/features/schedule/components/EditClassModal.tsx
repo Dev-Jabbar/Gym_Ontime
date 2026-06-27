@@ -91,7 +91,7 @@ export function EditClassModal({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/classes/${classData.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/classes/${classData.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
