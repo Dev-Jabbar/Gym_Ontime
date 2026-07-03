@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { DashboardStats, UserRole } from "@/features/dashboard/types";
 import { INITIAL_STATS } from "@/features/dashboard/constants/mockData";
-import { formatRelativeTime } from "@/features/dashboard/utils/FormatRelativeTime";
+import { formatRelativeTime } from "@/features/dashboard/utils/formatRelativeTime";
 
 interface UseDashboardReturn {
   stats: DashboardStats;
