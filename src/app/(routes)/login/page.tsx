@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Dumbbell } from "lucide-react";
+import { useUserStore } from "@/store/useUserStore";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 const loginSchema = z.object({
@@ -61,6 +62,17 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error("Login failed");
       }
+
+      // 🔑 The user store may already have hasFetched: true from an
+      // earlier, pre-login attempt to load /users/me that correctly
+      // failed (you weren't authenticated yet). Without this reset,
+      // useUser() on the next page trusts that stale "no user" result
+      // forever and never re-fetches — causing a permanently blank
+      // page until a manual refresh wipes the store clean.
+      // clearUser() resets hasFetched to false, forcing the next
+      // page's useUser() to fetch again — this time with a valid
+      // auth cookie just set by the login response above.
+      useUserStore.getState().clearUser();
 
       router.push("/");
     } catch (error) {

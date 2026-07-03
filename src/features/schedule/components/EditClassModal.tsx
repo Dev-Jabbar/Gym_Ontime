@@ -11,6 +11,7 @@ interface EditClassForm {
   schedule: string;
   duration: number;
   capacity: number;
+  recurrence: "none" | "daily" | "weekly";
   oneTime: number;
   weekly: number;
   monthly: number;
@@ -27,6 +28,16 @@ interface EditClassModalProps {
 
 const MIN_PRICE = 500;
 const MAX_PRICE = 500000;
+
+const DAYS_OF_WEEK = [
+  { value: "monday", label: "Mon" },
+  { value: "tuesday", label: "Tue" },
+  { value: "wednesday", label: "Wed" },
+  { value: "thursday", label: "Thu" },
+  { value: "friday", label: "Fri" },
+  { value: "saturday", label: "Sat" },
+  { value: "sunday", label: "Sun" },
+];
 
 const calculatePrices = (perSession: number) => {
   if (!perSession || perSession < MIN_PRICE) return null;
@@ -47,12 +58,16 @@ export function EditClassModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [autoCalculated, setAutoCalculated] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>(
+    classData.recurrenceDays ?? [],
+  );
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<EditClassForm>({
     defaultValues: {
@@ -61,6 +76,8 @@ export function EditClassModal({
       schedule: new Date(classData.schedule).toISOString().slice(0, 16),
       duration: parseInt(classData.duration),
       capacity: classData.capacity,
+      recurrence:
+        (classData.recurrence as "none" | "daily" | "weekly") ?? "none",
       oneTime: classData.pricing.oneTime ?? 0,
       weekly: classData.pricing.weekly ?? 0,
       monthly: classData.pricing.monthly ?? 0,
@@ -71,6 +88,7 @@ export function EditClassModal({
   });
 
   const perSessionPrice = useWatch({ control, name: "oneTime" });
+  const recurrence = watch("recurrence");
 
   useEffect(() => {
     if (autoCalculated) {
@@ -84,6 +102,12 @@ export function EditClassModal({
       }
     }
   }, [perSessionPrice, setValue, autoCalculated]);
+
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+    );
+  };
 
   const onSubmit = async (data: EditClassForm) => {
     setLoading(true);
@@ -102,6 +126,8 @@ export function EditClassModal({
             schedule: new Date(data.schedule).toISOString(),
             duration: Number(data.duration),
             capacity: Number(data.capacity),
+            recurrence: data.recurrence,
+            recurrenceDays: data.recurrence === "weekly" ? selectedDays : [],
             pricing: {
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
@@ -143,7 +169,6 @@ export function EditClassModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">Edit Class</h2>
           <button
@@ -200,6 +225,44 @@ export function EditClassModal({
             </div>
           </div>
 
+          {/* Recurrence */}
+          <div>
+            <label className={labelClass}>Recurrence</label>
+            <select {...register("recurrence")} className={inputClass}>
+              <option value="none">One-off (single session)</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly (select days)</option>
+            </select>
+          </div>
+
+          {/* Days of week — only show when weekly */}
+          {recurrence === "weekly" && (
+            <div>
+              <label className={labelClass}>Select Days *</label>
+              <div className="flex gap-2 flex-wrap">
+                {DAYS_OF_WEEK.map((day) => (
+                  <button
+                    key={day.value}
+                    type="button"
+                    onClick={() => toggleDay(day.value)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedDays.includes(day.value)
+                        ? "bg-orange-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {day.label}
+                  </button>
+                ))}
+              </div>
+              {selectedDays.length === 0 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please select at least one day
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Capacity */}
           <div>
             <label className={labelClass}>Capacity *</label>
@@ -211,7 +274,7 @@ export function EditClassModal({
             />
           </div>
 
-          {/* Pricing */}
+          {/* Per Session Price */}
           <div>
             <label className={labelClass}>Per Session Price (₦) *</label>
             <input
@@ -240,44 +303,47 @@ export function EditClassModal({
             </p>
           </div>
 
-          {/* Subscription prices */}
-          <div>
-            <label className={labelClass}>
-              Subscription Prices (₦) — editable
-            </label>
-            <div className="space-y-2 bg-gray-50 rounded-lg p-4">
-              {pricingRows.map((item) => (
-                <div key={item.key} className="flex items-center gap-3">
-                  <div className="w-32 flex-shrink-0">
-                    <p className="text-sm font-medium text-gray-700">
-                      {item.label}
-                    </p>
-                    <p className="text-xs text-green-600">{item.discount}</p>
+          {/* ✅ Subscription prices — only for recurring classes */}
+          {recurrence !== "none" && (
+            <div>
+              <label className={labelClass}>
+                Subscription Prices (₦) — editable
+              </label>
+              <div className="space-y-2 bg-gray-50 rounded-lg p-4">
+                {pricingRows.map((item) => (
+                  <div key={item.key} className="flex items-center gap-3">
+                    <div className="w-32 flex-shrink-0">
+                      <p className="text-sm font-medium text-gray-700">
+                        {item.label}
+                      </p>
+                      <p className="text-xs text-green-600">{item.discount}</p>
+                    </div>
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                        ₦
+                      </span>
+                      <input
+                        {...register(item.key as keyof EditClassForm)}
+                        type="number"
+                        min={0}
+                        className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
+                      />
+                    </div>
                   </div>
-                  <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                      ₦
-                    </span>
-                    <input
-                      {...register(item.key as keyof EditClassForm)}
-                      type="number"
-                      min={0}
-                      className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Error */}
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
-          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading ||
+                (recurrence === "weekly" && selectedDays.length === 0)
+              }
               className="flex-1 flex items-center justify-center gap-2 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-60"
             >
               <TbCheck className="w-4 h-4" />

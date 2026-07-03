@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { TbClock, TbUsers } from "react-icons/tb";
+import { TbClock, TbUsers, TbRefresh } from "react-icons/tb";
 import { getStatusBadgeColor, getCapacityColor } from "../utils/formatters";
 import type { ClassCardProps } from "../types";
 import { useRouter } from "next/navigation";
@@ -17,11 +17,12 @@ export function ClassCard({
   const capacityPercentage = (classData.enrolled / classData.capacity) * 100;
   const router = useRouter();
 
-  // ✅ Check if this is the trainer's own class
   const isMyClass =
     userRole === "trainer" &&
     trainerProfileId &&
     classData.trainer.id === trainerProfileId;
+
+  const isRecurring = classData.recurrence !== "none";
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
@@ -36,7 +37,6 @@ export function ClassCard({
             {classData.status.charAt(0).toUpperCase() +
               classData.status.slice(1)}
           </span>
-          {/* ✅ My Class badge */}
           {isMyClass && (
             <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
               My Class
@@ -58,7 +58,7 @@ export function ClassCard({
         <p className="text-sm text-gray-600 mb-4">{classData.description}</p>
 
         {/* Time & Duration */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
           <div className="flex items-center gap-1">
             <TbClock className="w-4 h-4" />
             <span>
@@ -81,6 +81,15 @@ export function ClassCard({
           <span>{classData.duration}</span>
         </div>
 
+        {/* ✅ Recurrence days */}
+        {isRecurring && (classData.recurrenceDays?.length ?? 0) > 0 && (
+          <p className="text-xs text-blue-600 mb-4">
+            Every{" "}
+            {classData.recurrenceDays
+              ?.map((d) => d.charAt(0).toUpperCase() + d.slice(1, 3))
+              .join(", ")}
+          </p>
+        )}
         {/* Trainer */}
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
@@ -146,7 +155,6 @@ export function ClassCard({
           </button>
         )}
 
-        {/* ✅ Trainer — View Members button only on their classes */}
         {userRole === "trainer" && isMyClass && (
           <button
             onClick={() => router.push(`/members?classId=${classData.id}`)}

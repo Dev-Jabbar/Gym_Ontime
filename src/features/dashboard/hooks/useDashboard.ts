@@ -2,10 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { DashboardStats, UserRole } from "@/features/dashboard/types";
-import {
-  INITIAL_STATS,
-  MOCK_RECENT_SIGNUPS,
-} from "@/features/dashboard/constants/mockData";
+import { INITIAL_STATS } from "@/features/dashboard/constants/mockData";
+import { formatRelativeTime } from "@/features/dashboard/utils/FormatRelativeTime";
 
 interface UseDashboardReturn {
   stats: DashboardStats;
@@ -128,26 +126,48 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         const paymentsData = await paymentsRes.json();
         const payments = paymentsData.data ?? [];
 
+        // ⚠️ declared once here, used below by both revenue and
+        // recentSignups — was missing in a prior draft, which would
+        // have thrown "now is not defined" in this branch.
+        const now = new Date();
+
         // Total members
         const totalMembers = users.filter(
           (u: any) => u.role === "member",
         ).length;
+
+        // ✅ Real recent signups — reuses the `users` fetch above
+        // instead of hitting the API again. Sorted newest-first, top 5.
+        const recentSignups = users
+          .filter((u: any) => u.role === "member")
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, 5)
+          .map((u: any) => ({
+            id: u._id ?? u.id,
+            name: u.name,
+            avatar: u.avatar ?? null,
+            joinedAt: formatRelativeTime(u.createdAt),
+            role: u.role,
+          }));
 
         // Active classes
         const activeClasses = classes.filter(
           (cls: any) => cls.status === "upcoming" || cls.status === "ongoing",
         ).length;
 
-        // Monthly revenue
-        const now = new Date();
+        // Monthly revenue — rolling last 30 days, not "this calendar
+        // month". A calendar-month filter zeroes out at the start of
+        // every month even if plenty of revenue came in a few days ago
+        // (e.g. late June payments wouldn't count once July starts).
+        const thirtyDaysAgo = new Date(now);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const revenue = payments
           .filter((p: any) => {
             const date = new Date(p.createdAt);
-            return (
-              p.status === "completed" &&
-              date.getMonth() === now.getMonth() &&
-              date.getFullYear() === now.getFullYear()
-            );
+            return p.status === "completed" && date >= thirtyDaysAgo;
           })
           .reduce((sum: number, p: any) => sum + p.amount, 0);
 
@@ -214,7 +234,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
           revenueData,
           capacityUsage,
           upcomingClasses,
-          recentSignups: MOCK_RECENT_SIGNUPS,
+          recentSignups,
         }));
       } else if (userRole === "trainer") {
         const classesRes = await fetch(

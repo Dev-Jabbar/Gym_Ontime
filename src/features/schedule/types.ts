@@ -1,3 +1,14 @@
+export type RecurrenceType = "none" | "daily" | "weekly" | "monthly";
+
+export type DayOfWeek =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
+
 export interface Class {
   id: string;
   name: string;
@@ -20,10 +31,11 @@ export interface Class {
   enrolled: number;
   status: "upcoming" | "ongoing" | "completed" | "canceled";
   duration: string;
+  recurrence: RecurrenceType; // ✅
+  recurrenceDays: DayOfWeek[]; // ✅
 }
 
 export type UserRole = "admin" | "trainer" | "member";
-
 export type FilterStatus = "all" | "upcoming" | "ongoing" | "completed";
 
 export interface ScheduleProps {
@@ -42,7 +54,7 @@ export interface ClassCardProps {
 }
 
 export interface DateNavigatorProps {
-  selectedDate: Date | null; //
+  selectedDate: Date | null;
   onPreviousDay: () => void;
   onNextDay: () => void;
   onDateChange: (date: Date) => void;

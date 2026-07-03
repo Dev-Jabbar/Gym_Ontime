@@ -1,0 +1,34 @@
+1. Recent Signups real data (admin dashboard)
+   → GET /api/users → filter by role=member, sort by createdAt
+   → Replace MOCK_RECENT_SIGNUPS in useDashboard.ts
+
+2. Admin Members management page
+   → List all members
+   → Upgrade member to trainer button
+   → Delete member button
+   → Already have backend: GET /api/users, POST /api/users/:id/upgrade-to-trainer, DELETE /api/users/:id
+
+3. Cloudinary avatar upload
+   → Install cloudinary
+   → Add upload endpoint to backend
+   → Add upload button to profile page
+
+4. Register page
+   → Currently only login exists
+   → Basic form: name, email, password
+
+5. "Booked" indicator on Schedule
+   → Show which classes member already paid for
+   → Fetch member's payments, compare classIds
+
+6. Assign trainer to class UI
+   → Currently only via Postman
+   → Admin clicks "Assign Trainer" on class card
+   → Dropdown of available trainers
+
+7. Notification system (advanced)
+   → Class reminders
+   → Payment confirmations
+
+8. Mobile responsiveness check
+   → Test all pages on mobile

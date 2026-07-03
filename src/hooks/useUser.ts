@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useUserStore } from "@/store/useUserStore";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "admin" | "trainer" | "member";
-  avatar: string | null;
-}
-
+// Same signature as before (returns User | null) so every existing
+// call site — LayoutWrapper, admin route guards, etc. — keeps working
+// unchanged. The difference is purely internal: this used to fetch
+// /users/me on every mount (i.e. every page navigation, since
+// LayoutWrapper wraps every route); now it reads from a shared store
+// and only fetches once per app load.
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  const user = useUserStore((state) => state.user);
+  const hasFetched = useUserStore((state) => state.hasFetched);
+  const fetchUser = useUserStore((state) => state.fetchUser);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Not authenticated");
-        return res.json();
-      })
-      .then((data) => setUser(data))
-      .catch(() => {
-        router.push("/login"); // ✅ handles both network errors and auth failures
-      });
-  }, []);
+    if (!hasFetched) {
+      fetchUser();
+    }
+  }, [hasFetched, fetchUser]);
 
   return user;
 }

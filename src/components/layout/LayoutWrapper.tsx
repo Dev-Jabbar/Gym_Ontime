@@ -6,14 +6,13 @@ import Header from "./Header";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
+  const user = useUser();
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
   if (isAuthPage) {
     return <>{children}</>;
   }
 
-  const user = useUser();
   // ✅ Wait until user is loaded before rendering header
   if (!user) return null; // or a loading spinner
 

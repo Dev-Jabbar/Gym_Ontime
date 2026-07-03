@@ -10,6 +10,8 @@ interface CreateClassForm {
   schedule: string;
   duration: number;
   capacity: number;
+  recurrence: "none" | "daily" | "weekly" | "monthly";
+  recurrenceDays: string[];
   oneTime: number;
   weekly: number;
   monthly: number;
@@ -26,15 +28,24 @@ interface CreateClassModalProps {
 const MIN_PRICE = 500;
 const MAX_PRICE = 500000;
 
-// ✅ Auto-calculate subscription prices from per-session price
+const DAYS_OF_WEEK = [
+  { value: "monday", label: "Mon" },
+  { value: "tuesday", label: "Tue" },
+  { value: "wednesday", label: "Wed" },
+  { value: "thursday", label: "Thu" },
+  { value: "friday", label: "Fri" },
+  { value: "saturday", label: "Sat" },
+  { value: "sunday", label: "Sun" },
+];
+
 const calculatePrices = (perSession: number) => {
   if (!perSession || perSession < MIN_PRICE) return null;
   return {
-    weekly: Math.round(perSession * 4 * 0.9), // 4 sessions, 10% off
-    monthly: Math.round(perSession * 16 * 0.8), // 16 sessions, 20% off
-    quarterly: Math.round(perSession * 48 * 0.72), // 48 sessions, 28% off
-    biannual: Math.round(perSession * 96 * 0.64), // 96 sessions, 36% off
-    yearly: Math.round(perSession * 192 * 0.56), // 192 sessions, 44% off
+    weekly: Math.round(perSession * 4 * 0.9),
+    monthly: Math.round(perSession * 16 * 0.8),
+    quarterly: Math.round(perSession * 48 * 0.72),
+    biannual: Math.round(perSession * 96 * 0.64),
+    yearly: Math.round(perSession * 192 * 0.56),
   };
 };
 
@@ -44,17 +55,21 @@ export function CreateClassModal({
 }: CreateClassModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CreateClassForm>({
     defaultValues: {
       duration: 60,
       capacity: 10,
+      recurrence: "none",
+      recurrenceDays: [],
       oneTime: 0,
       weekly: 0,
       monthly: 0,
@@ -64,8 +79,8 @@ export function CreateClassModal({
     },
   });
 
-  // ✅ Watch per-session price and auto-calculate
   const perSessionPrice = useWatch({ control, name: "oneTime" });
+  const recurrence = watch("recurrence");
 
   useEffect(() => {
     const prices = calculatePrices(Number(perSessionPrice));
@@ -77,6 +92,12 @@ export function CreateClassModal({
       setValue("yearly", prices.yearly);
     }
   }, [perSessionPrice, setValue]);
+
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+    );
+  };
 
   const onSubmit = async (data: CreateClassForm) => {
     setLoading(true);
@@ -95,6 +116,8 @@ export function CreateClassModal({
             schedule: new Date(data.schedule).toISOString(),
             duration: Number(data.duration),
             capacity: Number(data.capacity),
+            recurrence: data.recurrence,
+            recurrenceDays: data.recurrence === "weekly" ? selectedDays : [],
             pricing: {
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
@@ -136,7 +159,6 @@ export function CreateClassModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">Create New Class</h2>
           <button
@@ -174,7 +196,7 @@ export function CreateClassModal({
           {/* Schedule & Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Schedule *</label>
+              <label className={labelClass}>Start Date & Time *</label>
               <input
                 {...register("schedule", { required: "Schedule is required" })}
                 type="datetime-local"
@@ -196,6 +218,44 @@ export function CreateClassModal({
             </div>
           </div>
 
+          {/* Recurrence */}
+          <div>
+            <label className={labelClass}>Recurrence</label>
+            <select {...register("recurrence")} className={inputClass}>
+              <option value="none">One-off (single session)</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly (select days)</option>
+            </select>
+          </div>
+
+          {/* Days of week — only show when weekly */}
+          {recurrence === "weekly" && (
+            <div>
+              <label className={labelClass}>Select Days *</label>
+              <div className="flex gap-2 flex-wrap">
+                {DAYS_OF_WEEK.map((day) => (
+                  <button
+                    key={day.value}
+                    type="button"
+                    onClick={() => toggleDay(day.value)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedDays.includes(day.value)
+                        ? "bg-orange-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {day.label}
+                  </button>
+                ))}
+              </div>
+              {selectedDays.length === 0 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please select at least one day
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Capacity */}
           <div>
             <label className={labelClass}>Capacity *</label>
@@ -208,7 +268,7 @@ export function CreateClassModal({
             />
           </div>
 
-          {/* Pricing */}
+          {/* Per Session Price */}
           <div>
             <label className={labelClass}>Per Session Price (₦) *</label>
             <input
@@ -238,8 +298,8 @@ export function CreateClassModal({
             </p>
           </div>
 
-          {/* Auto-calculated subscription prices */}
-          {Number(perSessionPrice) >= MIN_PRICE && (
+          {/* Subscription prices */}
+          {Number(perSessionPrice) >= MIN_PRICE && recurrence !== "none" && (
             <div>
               <label className={labelClass}>
                 Subscription Prices (auto-calculated, editable)
@@ -270,14 +330,15 @@ export function CreateClassModal({
             </div>
           )}
 
-          {/* Error */}
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
-          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading ||
+                (recurrence === "weekly" && selectedDays.length === 0)
+              }
               className="flex-1 flex items-center justify-center gap-2 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-60"
             >
               <TbPlus className="w-4 h-4" />

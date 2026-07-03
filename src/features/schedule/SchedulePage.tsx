@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TbPlus } from "react-icons/tb";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSchedule, useClassFilters } from "./hooks/useSchedule";
 import {
   DateNavigator,
@@ -20,6 +21,9 @@ export function SchedulePage({
   userId,
   trainerProfileId,
 }: ScheduleProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +37,17 @@ export function SchedulePage({
 
   const { classes, loading, refetch } = useSchedule(selectedDate);
   const filteredClasses = useClassFilters(classes, filterStatus, searchQuery);
+
+  // Auto-open the create modal when arriving via ?action=create — e.g.
+  // from the dashboard's "Create New Class" Quick Action, since this
+  // modal lives in local state rather than being its own route.
+  useEffect(() => {
+    if (searchParams.get("action") === "create" && userRole === "admin") {
+      setShowCreateModal(true);
+      // Strip the query param so refreshing/closing doesn't reopen it.
+      router.replace("/schedule");
+    }
+  }, [searchParams, userRole, router]);
 
   const handlePreviousDay = () => {
     if (!selectedDate) return;

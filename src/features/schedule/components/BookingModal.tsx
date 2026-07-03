@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TbX } from "react-icons/tb";
+import { TbX, TbRefresh, TbClock } from "react-icons/tb";
 import { useBooking } from "../hooks/useBooking";
 import type { Class } from "../types";
 
@@ -36,8 +36,16 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
   const { initiatePayment, loading, error } = useBooking();
   const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null);
 
+  const isRecurring = classData.recurrence !== "none";
+
+  // ✅ Filter plans based on recurrence
   const planOptions: PlanOption[] = Object.entries(classData.pricing)
-    .filter(([, price]) => price && price > 0)
+    .filter(([key, price]) => {
+      if (!price || price === 0) return false;
+      // ✅ For one-off classes, only show oneTime
+      if (!isRecurring && key !== "oneTime") return false;
+      return true;
+    })
     .map(([key, price]) => ({
       key: key as PlanOption["key"],
       label: INTERVAL_LABELS[key] ?? key,
@@ -74,6 +82,37 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
           >
             <TbX className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* ✅ Show recurrence info */}
+        <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-gray-50 rounded-lg">
+          {isRecurring ? (
+            <>
+              <TbRefresh className="w-4 h-4 text-orange-500" />
+              <p className="text-sm text-gray-600">
+                <span className="font-medium capitalize">
+                  {classData.recurrence}
+                </span>{" "}
+                class
+                {classData.recurrenceDays.length > 0 && (
+                  <span className="text-gray-500">
+                    {" "}
+                    —{" "}
+                    {classData.recurrenceDays
+                      .map((d) => d.charAt(0).toUpperCase() + d.slice(1, 3))
+                      .join(", ")}
+                  </span>
+                )}
+              </p>
+            </>
+          ) : (
+            <>
+              <TbClock className="w-4 h-4 text-gray-400" />
+              <p className="text-sm text-gray-600">
+                One-off class — single session only
+              </p>
+            </>
+          )}
         </div>
 
         <p className="text-sm text-gray-600 mb-4">Choose a payment plan:</p>

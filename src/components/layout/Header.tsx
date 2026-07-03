@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore";
 import { IoMenu, IoClose } from "react-icons/io5";
 import {
   TbDashboard,
   TbCalendar,
   TbUsers,
+  TbUsersGroup,
   TbCurrencyNaira,
   TbUser,
   TbSettings,
@@ -31,6 +32,7 @@ export default function Header({
   const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const clearUser = useUserStore((state) => state.clearUser);
 
   const handleLogout = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, {
@@ -38,6 +40,7 @@ export default function Header({
       credentials: "include", // 👈 required for cookie to be cleared
     });
 
+    clearUser();
     setProfileOpen(false);
     setMenuOpen(false);
     router.push("/login");
@@ -58,18 +61,32 @@ export default function Header({
       },
     ];
 
+    // ⚠️ Split by role instead of one shared "Members" item:
+    // trainers manage class rosters (/members), admins manage the
+    // full user list (/admin/members) — these are different pages
+    // with different data, so they need different links even though
+    // the label and icon look the same.
     const adminItems = [
       {
         name: "Members",
-        href: "/members",
+        href: "/admin/members",
         icon: TbUsers,
-        roles: ["admin", "trainer"],
+        roles: ["admin"],
       },
       {
         name: "Payments",
         href: "/payments",
         icon: TbCurrencyNaira,
         roles: ["admin"],
+      },
+    ];
+
+    const trainerMemberItems = [
+      {
+        name: "Members",
+        href: "/members",
+        icon: TbUsersGroup,
+        roles: ["trainer"],
       },
     ];
 
@@ -82,14 +99,23 @@ export default function Header({
       },
     ];
 
+    // Was pointing at /trainers, which has no page in app/(routes) at all
+    // (confirmed empty) — repointed to the real management page instead
+    // of leaving a dead link in the nav.
     const trainerItems = [
-      { name: "Trainers", href: "/trainers", icon: TbUsers, roles: ["admin"] },
+      {
+        name: "Trainers",
+        href: "/admin/trainers",
+        icon: TbUsers,
+        roles: ["admin"],
+      },
     ];
 
     const allItems = [
       ...baseItems,
       ...trainerItems,
       ...adminItems,
+      ...trainerMemberItems,
       ...memberItems,
     ];
     return allItems.filter((item) => item.roles.includes(userRole));
@@ -144,7 +170,7 @@ export default function Header({
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-700">
-                  <Image
+                  <img
                     src={
                       userAvatar ||
                       `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
@@ -212,7 +238,7 @@ export default function Header({
           <div className="lg:hidden mt-4 pb-4 space-y-2">
             <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700">
-                <Image
+                <img
                   src={
                     userAvatar ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`

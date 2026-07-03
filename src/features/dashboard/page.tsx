@@ -54,7 +54,7 @@ export function DashboardPage({ userRole }: DashboardProps) {
                 icon={<TbUsers className="w-8 h-8" />}
                 title="Total Members"
                 value={stats.totalMembers.toLocaleString()}
-                change="+12%"
+                change=""
                 positive
               />
 
@@ -62,21 +62,21 @@ export function DashboardPage({ userRole }: DashboardProps) {
                 icon={<TbCalendar className="w-8 h-8" />}
                 title="Active Classes"
                 value={stats.activeClasses.toString()}
-                change="+5"
+                change=""
                 positive
               />
               <StatCard
                 icon={<TbCurrencyNaira className="w-8 h-8" />}
-                title="Monthly Revenue"
+                title="Revenue (Last 30 Days)"
                 value={`₦${(stats.revenue / 1000000).toFixed(1)}M`}
-                change="+18%"
+                change=""
                 positive
               />
               <StatCard
                 icon={<TbTrendingUp className="w-8 h-8" />}
                 title="Capacity Usage"
                 value={`${stats.capacityUsage}%`}
-                change="+3%"
+                change=""
                 positive
               />
             </>

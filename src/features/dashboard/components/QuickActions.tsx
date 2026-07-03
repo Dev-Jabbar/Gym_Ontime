@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { UserRole } from "@/features/dashboard/types";
 
 interface QuickActionsProps {
@@ -5,17 +8,48 @@ interface QuickActionsProps {
 }
 
 export const QuickActions = ({ userRole }: QuickActionsProps) => {
+  const router = useRouter();
+
   const getActions = () => {
     switch (userRole) {
       case "admin":
         return [
-          { label: "Create New Class", onClick: () => {} },
-          { label: "Add New Member", onClick: () => {} },
+          {
+            label: "Create New Class",
+            // SchedulePage's CreateClassModal is opened via local state,
+            // not its own route — so we navigate to /schedule with a
+            // query param it checks on load to auto-open the modal.
+            onClick: () => router.push("/schedule?action=create"),
+          },
+          {
+            label: "Promote Member",
+            // Sends admin to the members list, where Upgrade to Trainer
+            // already works (built earlier) — real, working action,
+            // unlike the old "Add New Member" which had nowhere to go.
+            onClick: () => router.push("/admin/members"),
+          },
         ];
       case "member":
         return [
-          { label: "Book a Class", onClick: () => {} },
-          { label: "View My Schedule", onClick: () => {} },
+          { label: "Book a Class", onClick: () => router.push("/schedule") },
+          {
+            label: "View My Schedule",
+            onClick: () => router.push("/schedule"),
+          },
+        ];
+      case "trainer":
+        // Was previously missing entirely — trainers saw no Quick
+        // Actions panel at all. These map to the two real pages a
+        // trainer role has access to.
+        return [
+          {
+            label: "View My Classes",
+            onClick: () => router.push("/schedule"),
+          },
+          {
+            label: "View My Members",
+            onClick: () => router.push("/members"),
+          },
         ];
       default:
         return [];
