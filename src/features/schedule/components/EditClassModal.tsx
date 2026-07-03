@@ -5,6 +5,11 @@ import { useForm, useWatch } from "react-hook-form";
 import { TbX, TbCheck } from "react-icons/tb";
 import type { Class } from "../types";
 
+interface TrainerOption {
+  _id: string;
+  name: string;
+}
+
 interface EditClassForm {
   name: string;
   description: string;
@@ -12,6 +17,7 @@ interface EditClassForm {
   duration: number;
   capacity: number;
   recurrence: "none" | "daily" | "weekly";
+  trainer: string;
   oneTime: number;
   weekly: number;
   monthly: number;
@@ -62,6 +68,38 @@ export function EditClassModal({
     classData.recurrenceDays ?? [],
   );
 
+  // Same trainer-list fetch as CreateClassModal, keyed by User._id so
+  // it matches classData.trainer.userId for pre-selection.
+  const [trainers, setTrainers] = useState<TrainerOption[]>([]);
+  const [trainersLoading, setTrainersLoading] = useState(true);
+  const [trainersError, setTrainersError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch trainers");
+
+        const data = await res.json();
+        const users: any[] = Array.isArray(data) ? data : (data.data ?? []);
+
+        const trainerUsers = users
+          .filter((u) => u.role === "trainer" && u.isActive !== false)
+          .map((u) => ({ _id: u._id, name: u.name }));
+
+        setTrainers(trainerUsers);
+      } catch (err) {
+        setTrainersError("Unable to load trainers.");
+      } finally {
+        setTrainersLoading(false);
+      }
+    };
+
+    fetchTrainers();
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -78,6 +116,10 @@ export function EditClassModal({
       capacity: classData.capacity,
       recurrence:
         (classData.recurrence as "none" | "daily" | "weekly") ?? "none",
+      // Pre-select using the trainer's User._id, matching the dropdown's
+      // option values — classData.trainer.id is the TrainerProfile._id,
+      // which would not match any option here.
+      trainer: classData.trainer.userId ?? "",
       oneTime: classData.pricing.oneTime ?? 0,
       weekly: classData.pricing.weekly ?? 0,
       monthly: classData.pricing.monthly ?? 0,
@@ -128,6 +170,12 @@ export function EditClassModal({
             capacity: Number(data.capacity),
             recurrence: data.recurrence,
             recurrenceDays: data.recurrence === "weekly" ? selectedDays : [],
+            // Only send trainer if it actually changed from the current
+            // one — avoids an unnecessary lookup/resolution on the
+            // backend for a no-op update.
+            ...(data.trainer !== classData.trainer.userId && {
+              trainer: data.trainer,
+            }),
             pricing: {
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
@@ -199,6 +247,37 @@ export function EditClassModal({
               rows={2}
               className={inputClass}
             />
+          </div>
+
+          {/* Trainer */}
+          <div>
+            <label className={labelClass}>Trainer *</label>
+            {trainersLoading ? (
+              <p className="text-sm text-gray-400">Loading trainers...</p>
+            ) : trainersError ? (
+              <p className="text-sm text-red-500">{trainersError}</p>
+            ) : trainers.length === 0 ? (
+              <p className="text-sm text-red-500">No trainers available.</p>
+            ) : (
+              <select
+                {...register("trainer", {
+                  required: "Please assign a trainer",
+                })}
+                className={inputClass}
+              >
+                <option value="" disabled>
+                  Select a trainer
+                </option>
+                {trainers.map((trainer) => (
+                  <option key={trainer._id} value={trainer._id}>
+                    {trainer.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors.trainer && (
+              <p className={errorClass}>{errors.trainer.message}</p>
+            )}
           </div>
 
           {/* Schedule & Duration */}

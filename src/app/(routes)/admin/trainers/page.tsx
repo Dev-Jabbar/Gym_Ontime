@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/useUserStore";
-import { AdminMembersPage } from "@/features/admin";
+import { AdminTrainersPage } from "@/features/admin";
 
 export default function Page() {
   const user = useUser();
@@ -28,5 +28,5 @@ export default function Page() {
 
   if (loading || !user || user.role !== "admin") return null;
 
-  return <AdminMembersPage />;
+  return <AdminTrainersPage />;
 }

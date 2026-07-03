@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { TbX, TbPlus } from "react-icons/tb";
 
+interface TrainerOption {
+  _id: string;
+  name: string;
+}
+
 interface CreateClassForm {
   name: string;
   description: string;
@@ -12,6 +17,7 @@ interface CreateClassForm {
   capacity: number;
   recurrence: "none" | "daily" | "weekly" | "monthly";
   recurrenceDays: string[];
+  trainer: string;
   oneTime: number;
   weekly: number;
   monthly: number;
@@ -57,6 +63,38 @@ export function CreateClassModal({
   const [error, setError] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
+  // Trainer list for the required dropdown — a class can't be created
+  // without one, so this needs to load before the form is usable.
+  const [trainers, setTrainers] = useState<TrainerOption[]>([]);
+  const [trainersLoading, setTrainersLoading] = useState(true);
+  const [trainersError, setTrainersError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch trainers");
+
+        const data = await res.json();
+        const users: any[] = Array.isArray(data) ? data : (data.data ?? []);
+
+        const trainerUsers = users
+          .filter((u) => u.role === "trainer" && u.isActive !== false)
+          .map((u) => ({ _id: u._id, name: u.name }));
+
+        setTrainers(trainerUsers);
+      } catch (err) {
+        setTrainersError("Unable to load trainers.");
+      } finally {
+        setTrainersLoading(false);
+      }
+    };
+
+    fetchTrainers();
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -70,6 +108,7 @@ export function CreateClassModal({
       capacity: 10,
       recurrence: "none",
       recurrenceDays: [],
+      trainer: "",
       oneTime: 0,
       weekly: 0,
       monthly: 0,
@@ -118,6 +157,7 @@ export function CreateClassModal({
             capacity: Number(data.capacity),
             recurrence: data.recurrence,
             recurrenceDays: data.recurrence === "weekly" ? selectedDays : [],
+            trainer: data.trainer,
             pricing: {
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
@@ -191,6 +231,40 @@ export function CreateClassModal({
               placeholder="Brief description of the class..."
               className={inputClass}
             />
+          </div>
+
+          {/* Trainer — required, no class can be created without one */}
+          <div>
+            <label className={labelClass}>Trainer *</label>
+            {trainersLoading ? (
+              <p className="text-sm text-gray-400">Loading trainers...</p>
+            ) : trainersError ? (
+              <p className="text-sm text-red-500">{trainersError}</p>
+            ) : trainers.length === 0 ? (
+              <p className="text-sm text-red-500">
+                No trainers available. Add a trainer before creating a class.
+              </p>
+            ) : (
+              <select
+                {...register("trainer", {
+                  required: "Please assign a trainer",
+                })}
+                className={inputClass}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select a trainer
+                </option>
+                {trainers.map((trainer) => (
+                  <option key={trainer._id} value={trainer._id}>
+                    {trainer.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors.trainer && (
+              <p className={errorClass}>{errors.trainer.message}</p>
+            )}
           </div>
 
           {/* Schedule & Duration */}
@@ -337,6 +411,8 @@ export function CreateClassModal({
               type="submit"
               disabled={
                 loading ||
+                trainersLoading ||
+                trainers.length === 0 ||
                 (recurrence === "weekly" && selectedDays.length === 0)
               }
               className="flex-1 flex items-center justify-center gap-2 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-60"
