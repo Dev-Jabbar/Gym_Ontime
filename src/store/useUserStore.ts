@@ -55,7 +55,16 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   // Called on logout so the next login doesn't show stale data, and so
   // a future fetchUser() call is allowed to run again.
-  clearUser: () => set({ user: null, loading: false, hasFetched: false }),
+  //
+  // ⚠️ loading is set to true here, not false — right after clearing,
+  // a fresh fetch is always about to happen (login pushes to a new
+  // page immediately after calling this). If this were false, any
+  // component reading the store between this call and the fetch
+  // resolving would see {user: null, loading: false} and wrongly
+  // conclude "definitely not logged in" — which is exactly what
+  // caused the login page to bounce back to /login before the real
+  // fetch could complete.
+  clearUser: () => set({ user: null, loading: true, hasFetched: false }),
 
   updateAvatar: (avatar) => {
     const currentUser = get().user;
