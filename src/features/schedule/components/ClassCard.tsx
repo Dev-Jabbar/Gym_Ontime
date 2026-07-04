@@ -26,29 +26,62 @@ export function ClassCard({
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Status Badge */}
-      <div className="p-4 pb-0 flex justify-between items-start">
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
-              classData.status,
-            )}`}
-          >
-            {classData.status.charAt(0).toUpperCase() +
-              classData.status.slice(1)}
-          </span>
-          {isMyClass && (
-            <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
-              My Class
+      {/* Banner image + overlaid status badge — only rendered when the
+          class has an image, so cards without one keep the original
+          layout exactly as before (no added height, no empty space). */}
+      {classData.image ? (
+        <div className="relative h-32 w-full">
+          <Image
+            src={classData.image}
+            alt={classData.name}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute top-3 left-3 flex items-center gap-2">
+            <span
+              className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
+                classData.status,
+              )}`}
+            >
+              {classData.status.charAt(0).toUpperCase() +
+                classData.status.slice(1)}
+            </span>
+            {isMyClass && (
+              <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
+                My Class
+              </span>
+            )}
+          </div>
+          {isFull && (
+            <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
+              Full
             </span>
           )}
         </div>
-        {isFull && (
-          <span className="text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
-            Full
-          </span>
-        )}
-      </div>
+      ) : (
+        <div className="p-4 pb-0 flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
+                classData.status,
+              )}`}
+            >
+              {classData.status.charAt(0).toUpperCase() +
+                classData.status.slice(1)}
+            </span>
+            {isMyClass && (
+              <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
+                My Class
+              </span>
+            )}
+          </div>
+          {isFull && (
+            <span className="text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
+              Full
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="p-6 pt-3">
         {/* Class Name */}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RecentSignup } from "@/features/dashboard/types";
 import { getRoleBadgeColor } from "@/features/dashboard/utils/helpers";
 
@@ -12,11 +13,9 @@ export const RecentSignups = ({ signups }: RecentSignupsProps) => {
       <div className="space-y-3 overflow-y-auto max-h-64 pr-1">
         {signups.map((signup) => {
           // Real signups can have avatar: null (User docs don't carry
-          // an avatar field — it lives on MemberProfile instead), so
-          // fall back to a generated avatar rather than pass null/empty
-          // to an <img> src. Plain <img>, not next/image, since this
-          // can be an arbitrary user-supplied URL and next/image
-          // requires every hostname to be pre-allowlisted.
+          // an avatar field — it lives on the profile models instead),
+          // so fall back to a generated avatar rather than pass null
+          // to an <Image> src.
           const avatarSrc =
             signup.avatar ||
             `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -29,7 +28,7 @@ export const RecentSignups = ({ signups }: RecentSignupsProps) => {
               className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                <img
+                <Image
                   src={avatarSrc}
                   alt={signup.name}
                   width={40}

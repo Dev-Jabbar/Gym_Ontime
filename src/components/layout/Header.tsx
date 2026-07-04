@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { IoMenu, IoClose } from "react-icons/io5";
@@ -170,7 +171,7 @@ export default function Header({
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-700">
-                  <img
+                  <Image
                     src={
                       userAvatar ||
                       `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
@@ -238,7 +239,7 @@ export default function Header({
           <div className="lg:hidden mt-4 pb-4 space-y-2">
             <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700">
-                <img
+                <Image
                   src={
                     userAvatar ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`

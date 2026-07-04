@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { TbArrowUpCircle, TbTrash, TbCheck, TbX } from "react-icons/tb";
 import type { AdminUser } from "@/features/admin/types";
 
@@ -42,12 +43,12 @@ export function AdminMemberCard({
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4">
-      {/* Avatar
-          Plain <img> instead of next/image on purpose: member.avatar can be
-          any arbitrary URL a user pasted in, and next/image throws a hard
-          runtime error for any hostname not pre-listed in next.config.js. */}
+      {/* Avatar — now next/image, since Cloudinary + ui-avatars are
+          allowlisted in next.config.js. Any pre-Cloudinary avatar URL
+          saved from an arbitrary source would still crash this; worth
+          a data check if that ever resurfaces. */}
       <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
-        <img
+        <Image
           src={avatar}
           alt={member.name}
           width={48}

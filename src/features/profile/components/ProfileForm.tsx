@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import {
   TbUser,
@@ -263,12 +264,9 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div className="relative w-24 h-24 mb-3">
-          {/* Plain <img>, not next/image — consistent with the rest of
-              the app (Header, AdminMemberCard, RecentSignups all do the
-              same) since the src can be either a ui-avatars.com fallback
-              or a Cloudinary URL, and this avoids needing both domains
-              allowlisted in next.config.js for one image. */}
-          <img
+          {/* next/image — Cloudinary + ui-avatars allowlisted in
+              next.config.js. */}
+          <Image
             src={avatar}
             alt={profile.name}
             width={96}

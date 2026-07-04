@@ -16,6 +16,10 @@ export interface Class {
   schedule: string;
   trainer: {
     id: string;
+    // The User._id behind this TrainerProfile — needed to pre-select
+    // the correct option in a <select> dropdown that's keyed by
+    // User._id (matching how the admin trainer list is built).
+    userId: string;
     name: string;
     avatar: string;
   };
@@ -33,6 +37,9 @@ export interface Class {
   duration: string;
   recurrence: RecurrenceType; // ✅
   recurrenceDays: DayOfWeek[]; // ✅
+  // Optional banner image (Cloudinary URL) — null/undefined means the
+  // card renders without a banner, not an error state.
+  image?: string | null;
 }
 
 export type UserRole = "admin" | "trainer" | "member";

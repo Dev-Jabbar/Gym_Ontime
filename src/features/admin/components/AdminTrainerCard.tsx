@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { TbTrash, TbCheck, TbX, TbBriefcase } from "react-icons/tb";
 import type { AdminTrainer } from "@/features/admin/types";
 
@@ -37,10 +38,10 @@ export function AdminTrainerCard({
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4">
-      {/* Plain <img>, not next/image — avatar is an arbitrary user-supplied
-          URL and next/image requires every hostname to be allowlisted. */}
+      {/* next/image — Cloudinary + ui-avatars allowlisted in
+          next.config.js. */}
       <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
-        <img
+        <Image
           src={avatar}
           alt={trainer.name}
           width={48}

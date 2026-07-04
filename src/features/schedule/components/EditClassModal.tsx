@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { TbX, TbCheck } from "react-icons/tb";
+import { TbX, TbCheck, TbPhoto } from "react-icons/tb";
+import { uploadToCloudinary, validateImageFile } from "@/lib/cloudinaryUpload";
 import type { Class } from "../types";
 
 interface TrainerOption {
@@ -73,6 +74,13 @@ export function EditClassModal({
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
   const [trainersError, setTrainersError] = useState<string | null>(null);
+
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    classData.image ?? null,
+  );
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchTrainers = async () => {
@@ -151,6 +159,32 @@ export function EditClassModal({
     );
   };
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setImageError(validationError);
+      return;
+    }
+
+    setImageError(null);
+    setImageUploading(true);
+
+    try {
+      const url = await uploadToCloudinary(file);
+      setImageUrl(url);
+    } catch (err) {
+      setImageError(
+        err instanceof Error ? err.message : "Upload failed. Try again.",
+      );
+    } finally {
+      setImageUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+    }
+  };
+
   const onSubmit = async (data: EditClassForm) => {
     setLoading(true);
     setError(null);
@@ -176,6 +210,10 @@ export function EditClassModal({
             ...(data.trainer !== classData.trainer.userId && {
               trainer: data.trainer,
             }),
+            ...(imageUrl &&
+              imageUrl !== classData.image && {
+                image: imageUrl,
+              }),
             pricing: {
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
@@ -247,6 +285,54 @@ export function EditClassModal({
               rows={2}
               className={inputClass}
             />
+          </div>
+
+          {/* Class Image — optional. Note: this build only supports
+              adding/replacing an image, not clearing one back to none,
+              once it's been set — a small follow-up if that's needed. */}
+          <div>
+            <label className={labelClass}>Class Image (optional)</label>
+            {imageUrl ? (
+              <div className="relative rounded-lg overflow-hidden h-32">
+                <img
+                  src={imageUrl}
+                  alt="Class preview"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={imageUploading}
+                  className="absolute bottom-2 right-2 px-3 py-1.5 bg-black/60 hover:bg-black/80 text-white text-xs rounded-lg transition-colors disabled:opacity-60"
+                >
+                  {imageUploading ? "Uploading..." : "Change"}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => imageInputRef.current?.click()}
+                disabled={imageUploading}
+                className="w-full h-24 flex flex-col items-center justify-center gap-1 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-orange-400 hover:text-orange-500 transition-colors disabled:opacity-60"
+              >
+                {imageUploading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-orange-500" />
+                ) : (
+                  <>
+                    <TbPhoto className="w-6 h-6" />
+                    <span className="text-xs">Click to upload an image</span>
+                  </>
+                )}
+              </button>
+            )}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            {imageError && <p className={errorClass}>{imageError}</p>}
           </div>
 
           {/* Trainer */}
