@@ -18,6 +18,11 @@ interface UserStore {
   fetchUser: () => Promise<void>;
   setUser: (user: User) => void;
   clearUser: () => void;
+  // Patches just the avatar on the cached user — used right after an
+  // upload succeeds, so the Header (and anywhere else reading from
+  // this store) updates immediately instead of showing stale data
+  // until the next full page reload forces a fresh /users/me fetch.
+  updateAvatar: (avatar: string) => void;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -51,4 +56,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
   // Called on logout so the next login doesn't show stale data, and so
   // a future fetchUser() call is allowed to run again.
   clearUser: () => set({ user: null, loading: false, hasFetched: false }),
+
+  updateAvatar: (avatar) => {
+    const currentUser = get().user;
+    if (!currentUser) return;
+    set({ user: { ...currentUser, avatar } });
+  },
 }));

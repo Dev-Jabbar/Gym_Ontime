@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import {
   TbUser,
@@ -17,8 +16,10 @@ import {
   TbCertificate,
   TbClock,
   TbStar,
+  TbCamera,
 } from "react-icons/tb";
 import type { ProfileData, UpdateProfileData } from "@/features/profile/types";
+import { uploadToCloudinary, validateImageFile } from "@/lib/cloudinaryUpload";
 
 interface ProfileFormProps {
   profile: ProfileData;
@@ -92,6 +93,9 @@ function Field({
 
 export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
   const [editing, setEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: {
@@ -153,6 +157,8 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
           availability: p.availability ?? "",
         });
       }
+      // Admin has no extra fields beyond name/email/avatar — nothing
+      // to reset here for that role.
     } else {
       reset((prev) => ({ ...prev, name: profile.name }));
     }
@@ -194,6 +200,10 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
       payload.gender = data.gender || undefined;
     }
 
+    // Admin: only `name` (already set above) — AdminProfile has no
+    // other editable fields besides avatar, which is handled separately
+    // via handleAvatarChange rather than this form submit.
+
     try {
       await onUpdate(payload);
       setEditing(false);
@@ -207,23 +217,92 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
     setEditing(false);
   };
 
-  const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    profile.name,
-  )}&background=random&color=fff&size=100`;
+  // Uploads immediately on file selection, independent of the rest of
+  // the form's Save/Cancel flow — avatar changes feel more responsive
+  // this way than being gated behind the full form submit.
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setUploadError(validationError);
+      return;
+    }
+
+    setUploadError(null);
+    setUploading(true);
+
+    try {
+      const url = await uploadToCloudinary(file);
+      await onUpdate({ avatar: url });
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? err.message : "Upload failed. Try again.",
+      );
+    } finally {
+      setUploading(false);
+      // Reset the input so selecting the same file again still fires
+      // onChange (browsers otherwise treat it as "no change").
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  // ✅ Real uploaded avatar (from Cloudinary) shown when present,
+  // falling back to a generated placeholder — was previously ALWAYS
+  // the generated placeholder, even after a real avatar existed.
+  const currentAvatar = (profile.profile as any)?.avatar;
+  const avatar =
+    currentAvatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      profile.name,
+    )}&background=random&color=fff&size=100`;
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
-        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 shadow-md mb-3">
-          <Image
+        <div className="relative w-24 h-24 mb-3">
+          {/* Plain <img>, not next/image — consistent with the rest of
+              the app (Header, AdminMemberCard, RecentSignups all do the
+              same) since the src can be either a ui-avatars.com fallback
+              or a Cloudinary URL, and this avoids needing both domains
+              allowlisted in next.config.js for one image. */}
+          <img
             src={avatar}
             alt={profile.name}
             width={96}
             height={96}
-            className="object-cover w-full h-full"
+            className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 shadow-md object-cover"
+          />
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="absolute bottom-0 right-0 w-8 h-8 flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white rounded-full border-2 border-white shadow-md transition-colors disabled:opacity-60"
+            aria-label="Change profile photo"
+          >
+            {uploading ? (
+              <div className="animate-spin rounded-full h-3.5 w-3.5 border-t-2 border-white" />
+            ) : (
+              <TbCamera className="w-4 h-4" />
+            )}
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleAvatarChange}
+            className="hidden"
           />
         </div>
+
+        {uploadError && (
+          <p className="text-xs text-red-500 mb-2 text-center">{uploadError}</p>
+        )}
+
         <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-sm font-medium capitalize">
           {profile.role}
         </span>
@@ -375,6 +454,9 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
               />
             </>
           )}
+
+          {/* Admin has nothing extra beyond name/email/avatar above —
+              no additional read-only fields needed for that role. */}
 
           <div className="mt-6">
             <button
@@ -612,6 +694,9 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
               </Field>
             </>
           )}
+
+          {/* Admin: name is already covered above; nothing else to
+              edit here since AdminProfile has no additional fields. */}
 
           <div className="mt-6 flex gap-3">
             <button

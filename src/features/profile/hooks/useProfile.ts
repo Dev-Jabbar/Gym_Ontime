@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ProfileData, UpdateProfileData } from "@/features/profile/types";
 import { useUser } from "@/hooks/useUser";
+import { useUserStore } from "@/store/useUserStore";
 
 interface UseProfileReturn {
   profile: ProfileData | null;
@@ -38,6 +39,16 @@ export const useProfile = (): UseProfileReturn => {
       } else if (user.role === "trainer") {
         profileRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/trainers/me`,
+          {
+            credentials: "include",
+          },
+        );
+      } else if (user.role === "admin") {
+        // ✅ Previously this branch didn't exist at all — admins got
+        // profile: null unconditionally and had no way to see or
+        // update their own avatar.
+        profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/admins/me`,
           {
             credentials: "include",
           },
@@ -144,7 +155,30 @@ export const useProfile = (): UseProfileReturn => {
         });
       }
 
+      // ✅ Update admin profile — new branch, previously missing.
+      // AdminProfile only has `avatar`, so this is intentionally the
+      // smallest of the three branches.
+      if (user.role === "admin") {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admins/me`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            ...(data.avatar !== undefined && { avatar: data.avatar }),
+          }),
+        });
+      }
+
       await fetchProfile();
+
+      // ✅ Sync the Zustand store too — without this, Header (which
+      // reads from the store, not from this hook's `profile` state)
+      // keeps showing the old avatar until a full page reload forces
+      // a fresh /users/me fetch. This makes the change visible
+      // immediately, everywhere the avatar is shown.
+      if (data.avatar !== undefined) {
+        useUserStore.getState().updateAvatar(data.avatar);
+      }
     } catch (err) {
       setError("Failed to update profile.");
     } finally {
