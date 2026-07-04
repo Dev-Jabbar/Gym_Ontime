@@ -1,20 +1,36 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
+import { useUserStore } from "@/store/useUserStore";
 import Header from "./Header";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const user = useUser();
+  const loading = useUserStore((state) => state.loading);
   const isAuthPage = pathname === "/login" || pathname === "/register";
+
+  useEffect(() => {
+    // Wait until we're sure — loading distinguishes "still checking"
+    // from "definitely not logged in". Without this, a visitor with
+    // no session cookie (e.g. first-ever visit, or after logout) just
+    // saw a permanently blank page with no header and no way forward,
+    // since this component always returned null for !user with no
+    // redirect at all.
+    if (!loading && !user && !isAuthPage) {
+      router.push("/login");
+    }
+  }, [loading, user, isAuthPage, router]);
 
   if (isAuthPage) {
     return <>{children}</>;
   }
 
-  // ✅ Wait until user is loaded before rendering header
-  if (!user) return null; // or a loading spinner
+  // Still checking, or about to redirect — render nothing either way.
+  if (!user) return null;
 
   return (
     <>
