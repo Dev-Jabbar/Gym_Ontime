@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { RecentSignup } from "@/features/dashboard/types";
 import { getRoleBadgeColor } from "@/features/dashboard/utils/helpers";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 
 interface RecentSignupsProps {
   signups: RecentSignup[];
@@ -16,11 +17,7 @@ export const RecentSignups = ({ signups }: RecentSignupsProps) => {
           // an avatar field — it lives on the profile models instead),
           // so fall back to a generated avatar rather than pass null
           // to an <Image> src.
-          const avatarSrc =
-            signup.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              signup.name,
-            )}&background=random&color=fff&size=40`;
+          const avatarSrc = signup.avatar || getAvatarFallback(signup.name);
 
           return (
             <div

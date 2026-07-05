@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { TbPhone, TbHeart, TbUser } from "react-icons/tb";
 import type { MemberProfile } from "@/features/members/types";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 
 interface MemberCardProps {
   member: MemberProfile;
@@ -10,10 +11,7 @@ interface MemberCardProps {
 
 export function MemberCard({ member }: MemberCardProps) {
   const avatar =
-    member.avatar ??
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      member.userId?.name ?? "Member",
-    )}&background=random&color=fff&size=40`;
+    member.avatar ?? getAvatarFallback(member.userId?.name ?? "Member");
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4">

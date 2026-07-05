@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { TbClock, TbUsers, TbRefresh } from "react-icons/tb";
+import { TbClock, TbUsers } from "react-icons/tb";
 import { getStatusBadgeColor, getCapacityColor } from "../utils/formatters";
 import type { ClassCardProps } from "../types";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,10 @@ export function ClassCard({
   const capacityPercentage = (classData.enrolled / classData.capacity) * 100;
   const router = useRouter();
 
+  // Only classes with an image get the expand/collapse behavior — no
+  // image means the card behaves exactly as it always did.
+  const [expanded, setExpanded] = useState(false);
+
   const isMyClass =
     userRole === "trainer" &&
     trainerProfileId &&
@@ -24,13 +28,52 @@ export function ClassCard({
 
   const isRecurring = classData.recurrence !== "none";
 
+  const handleCardClick = () => {
+    if (classData.image) setExpanded((prev) => !prev);
+  };
+
+  // Buttons need to keep working normally without also toggling the
+  // card — each one stops its click from bubbling up to the card.
+  const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
+
+  const statusBadge = (
+    <span
+      className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
+        classData.status,
+      )}`}
+    >
+      {classData.status.charAt(0).toUpperCase() + classData.status.slice(1)}
+    </span>
+  );
+
+  const myClassBadge = isMyClass && (
+    <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
+      My Class
+    </span>
+  );
+
+  const fullBadge = isFull && (
+    <span className="text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
+      Full
+    </span>
+  );
+
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Banner image + overlaid status badge — only rendered when the
-          class has an image, so cards without one keep the original
-          layout exactly as before (no added height, no empty space). */}
+    <div
+      onClick={handleCardClick}
+      className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow ${
+        classData.image ? "cursor-pointer" : ""
+      }`}
+    >
       {classData.image ? (
-        <div className="relative h-32 w-full">
+        /* Image + badges overlaid on top of it. Height animates between
+           a small "peek" strip (collapsed) and a full banner (expanded)
+           — pure CSS transition, no layout measuring needed. */
+        <div
+          className={`relative w-full transition-all duration-300 ease-in-out ${
+            expanded ? "h-32" : "h-8"
+          }`}
+        >
           <Image
             src={classData.image}
             alt={classData.name}
@@ -38,48 +81,21 @@ export function ClassCard({
             className="object-cover"
           />
           <div className="absolute top-3 left-3 flex items-center gap-2">
-            <span
-              className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
-                classData.status,
-              )}`}
-            >
-              {classData.status.charAt(0).toUpperCase() +
-                classData.status.slice(1)}
-            </span>
-            {isMyClass && (
-              <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
-                My Class
-              </span>
-            )}
+            {statusBadge}
+            {myClassBadge}
           </div>
-          {isFull && (
-            <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
-              Full
-            </span>
+          {fullBadge && (
+            <div className="absolute top-3 right-3">{fullBadge}</div>
           )}
         </div>
       ) : (
+        /* No image — original layout, completely unchanged. */
         <div className="p-4 pb-0 flex justify-between items-start">
           <div className="flex items-center gap-2">
-            <span
-              className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(
-                classData.status,
-              )}`}
-            >
-              {classData.status.charAt(0).toUpperCase() +
-                classData.status.slice(1)}
-            </span>
-            {isMyClass && (
-              <span className="text-xs px-3 py-1 rounded-full font-medium bg-orange-100 text-orange-600">
-                My Class
-              </span>
-            )}
+            {statusBadge}
+            {myClassBadge}
           </div>
-          {isFull && (
-            <span className="text-xs px-3 py-1 rounded-full font-medium bg-red-100 text-red-700">
-              Full
-            </span>
-          )}
+          {fullBadge}
         </div>
       )}
 
@@ -176,7 +192,10 @@ export function ClassCard({
         {/* Action Buttons */}
         {userRole === "member" && classData.status === "upcoming" && (
           <button
-            onClick={() => onBook(classData.id)}
+            onClick={(e) => {
+              stopPropagation(e);
+              onBook(classData.id);
+            }}
             disabled={isFull}
             className={`w-full py-3 rounded-lg font-medium transition-colors ${
               isFull
@@ -190,7 +209,10 @@ export function ClassCard({
 
         {userRole === "trainer" && isMyClass && (
           <button
-            onClick={() => router.push(`/members?classId=${classData.id}`)}
+            onClick={(e) => {
+              stopPropagation(e);
+              router.push(`/members?classId=${classData.id}`);
+            }}
             className="w-full py-3 rounded-lg font-medium transition-colors bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
           >
             <TbUsers className="w-4 h-4" />
@@ -201,13 +223,19 @@ export function ClassCard({
         {userRole === "admin" && (
           <div className="flex gap-2">
             <button
-              onClick={() => onEdit?.(classData.id)}
+              onClick={(e) => {
+                stopPropagation(e);
+                onEdit?.(classData.id);
+              }}
               className="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Edit
             </button>
             <button
-              onClick={() => onCancel?.(classData.id)}
+              onClick={(e) => {
+                stopPropagation(e);
+                onCancel?.(classData.id);
+              }}
               className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors"
             >
               Cancel

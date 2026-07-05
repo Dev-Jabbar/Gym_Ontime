@@ -21,6 +21,7 @@ import {
 } from "react-icons/tb";
 import type { ProfileData, UpdateProfileData } from "@/features/profile/types";
 import { uploadToCloudinary, validateImageFile } from "@/lib/cloudinaryUpload";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 
 interface ProfileFormProps {
   profile: ProfileData;
@@ -253,11 +254,7 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
   // falling back to a generated placeholder — was previously ALWAYS
   // the generated placeholder, even after a real avatar existed.
   const currentAvatar = (profile.profile as any)?.avatar;
-  const avatar =
-    currentAvatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      profile.name,
-    )}&background=random&color=fff&size=100`;
+  const avatar = currentAvatar || getAvatarFallback(profile.name, 100);
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { TbArrowUpCircle, TbTrash, TbCheck, TbX } from "react-icons/tb";
 import type { AdminUser } from "@/features/admin/types";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 
 interface AdminMemberCardProps {
   member: AdminUser;
@@ -22,11 +23,7 @@ export function AdminMemberCard({
 }: AdminMemberCardProps) {
   const [confirming, setConfirming] = useState<ConfirmState>(null);
 
-  const avatar =
-    member.avatar ??
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      member.name,
-    )}&background=random&color=fff&size=48`;
+  const avatar = member.avatar ?? getAvatarFallback(member.name, 48);
 
   const joinedDate = new Date(member.createdAt).toLocaleDateString("en-NG", {
     day: "numeric",

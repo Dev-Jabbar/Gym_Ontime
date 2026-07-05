@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { TbTrash, TbCheck, TbX, TbBriefcase } from "react-icons/tb";
 import type { AdminTrainer } from "@/features/admin/types";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 
 interface AdminTrainerCardProps {
   trainer: AdminTrainer;
@@ -18,11 +19,7 @@ export function AdminTrainerCard({
 }: AdminTrainerCardProps) {
   const [confirming, setConfirming] = useState(false);
 
-  const avatar =
-    trainer.avatar ??
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      trainer.name,
-    )}&background=random&color=fff&size=48`;
+  const avatar = trainer.avatar ?? getAvatarFallback(trainer.name, 48);
 
   const joinedDate = new Date(trainer.createdAt).toLocaleDateString("en-NG", {
     day: "numeric",

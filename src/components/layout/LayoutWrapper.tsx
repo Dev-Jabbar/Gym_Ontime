@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/useUserStore";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 import Header from "./Header";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -38,10 +39,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         <Header
           userRole={user.role}
           userName={user.name}
-          userAvatar={
-            user.avatar ??
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff&size=40`
-          }
+          userAvatar={user.avatar ?? getAvatarFallback(user.name)}
         />
       </div>
       {children}

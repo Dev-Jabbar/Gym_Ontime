@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
+import { getAvatarFallback } from "@/lib/getAvatarFallback";
 import { IoMenu, IoClose } from "react-icons/io5";
 import {
   TbDashboard,
@@ -172,10 +173,7 @@ export default function Header({
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-700">
                   <Image
-                    src={
-                      userAvatar ||
-                      `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
-                    }
+                    src={userAvatar || getAvatarFallback(userName)}
                     alt={userName || "User"}
                     width={40}
                     height={40}
@@ -240,10 +238,7 @@ export default function Header({
             <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700">
                 <Image
-                  src={
-                    userAvatar ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40`
-                  }
+                  src={userAvatar || getAvatarFallback(userName)}
                   alt={userName || "User"}
                   width={48}
                   height={48}
