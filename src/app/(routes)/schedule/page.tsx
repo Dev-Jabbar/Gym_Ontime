@@ -15,7 +15,10 @@ export default function Page() {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers/me`, {
         credentials: "include",
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch trainer profile");
+          return res.json();
+        })
         .then((data) => setTrainerProfileId(data._id))
         .catch(console.error);
     }

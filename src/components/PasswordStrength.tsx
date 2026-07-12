@@ -17,7 +17,7 @@ export default function PasswordStrength({ password }: { password: string }) {
         <span
           key={c.label}
           className={`flex items-center gap-1 ${
-            c.ok ? "text-emerald-400" : "text-zinc-500"
+            c.ok ? "text-orange-500" : "text-gray-400"
           }`}
         >
           <Check className="w-3 h-3" opacity={c.ok ? 1 : 0.3} />

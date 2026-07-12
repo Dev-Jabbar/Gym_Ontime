@@ -5,7 +5,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dumbbell, Check } from "lucide-react";
+import {
+  Dumbbell,
+  Check,
+  Calendar,
+  TrendingUp,
+  Users,
+  User,
+  Mail,
+  Lock,
+} from "lucide-react";
 
 import Field from "@/components/Field";
 import PasswordStrength from "@/components/PasswordStrength";
@@ -27,6 +36,12 @@ const registerSchema = z
 
 type FormValues = z.infer<typeof registerSchema>;
 
+const FEATURES = [
+  { icon: Calendar, label: "Book classes instantly" },
+  { icon: TrendingUp, label: "Track your progress" },
+  { icon: Users, label: "Connect with trainers" },
+];
+
 /* ───────── Page ───────── */
 
 export default function RegisterPage() {
@@ -34,6 +49,7 @@ export default function RegisterPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -48,6 +64,7 @@ export default function RegisterPage() {
   const password = watch("password") ?? "";
 
   async function onSubmit(data: FormValues) {
+    setSubmitError(null);
     try {
       setLoading(true);
 
@@ -74,99 +91,169 @@ export default function RegisterPage() {
 
       setDone(true);
     } catch (error) {
-      console.error(error);
+      setSubmitError(
+        error instanceof Error ? error.message : "Something went wrong.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-zinc-950 px-4 py-10">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
-        {/* LEFT */}
-
-        <div className="hidden md:flex md:w-[42%] flex-col justify-between p-10 bg-gradient-to-br from-emerald-950 via-zinc-950 to-zinc-900 border-r border-zinc-800">
-          <div className="flex items-center gap-2 text-emerald-400 font-bold">
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row rounded-3xl overflow-hidden bg-white shadow-xl">
+        {/* LEFT — orange gradient, same styling as the dashboard's
+            Quick Actions panel, for visual consistency across the app */}
+        <div className="hidden md:flex md:w-[42%] flex-col justify-between p-10 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <div className="flex items-center gap-2 font-bold">
             <Dumbbell className="w-5 h-5" />
             GymOntime
           </div>
 
           <div>
-            <h1 className="text-4xl font-black text-white">
+            <h1 className="text-4xl font-black leading-tight mb-8">
               Train harder. <br />
-              <span className="text-emerald-400">Track smarter.</span>
+              Track smarter.
             </h1>
+
+            <div className="space-y-4">
+              {FEATURES.map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium">{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
+
+          <div />
         </div>
 
         {/* RIGHT */}
-        <div className="flex-1 p-6 md:p-10 bg-zinc-900">
-          <h2 className="text-xl font-bold text-white">Create account</h2>
-
+        <div className="flex-1 p-6 md:p-10">
           {done ? (
-            <div className="p-6 text-center">
-              <Check className="mx-auto text-emerald-400 mb-2" />
-              <p className="text-white">Account created!</p>
+            <div className="py-10 text-center">
+              <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-7 h-7 text-orange-500" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Account created!
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                You can now sign in with your new account.
+              </p>
+              <a
+                href="/login"
+                className="inline-block w-full sm:w-auto px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+              >
+                Continue to Sign In
+              </a>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field<FormValues>
-                  id="fullName"
-                  label="Full Name"
-                  register={register}
-                  error={errors.fullName?.message}
-                />
-
-                <Field<FormValues>
-                  id="email"
-                  label="Email"
-                  type="email"
-                  register={register}
-                  error={errors.email?.message}
-                />
+            <>
+              <div className="flex items-center gap-2 mb-6 md:hidden">
+                <div className="w-9 h-9 rounded-lg bg-orange-500 flex items-center justify-center">
+                  <Dumbbell className="w-4 h-4 text-white" strokeWidth={2.5} />
+                </div>
+                <span className="text-xl font-extrabold text-gray-900">
+                  Gym<span className="text-orange-500">Ontime</span>
+                </span>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field<FormValues>
-                  id="password"
-                  label="Password"
-                  type={showPass ? "text" : "password"}
-                  register={register}
-                  error={errors.password?.message}
-                  right={
-                    <Toggle
-                      show={showPass}
-                      onToggle={() => setShowPass((v) => !v)}
-                    />
-                  }
-                />
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                Create your account
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Already have an account?{" "}
+                <a
+                  href="/login"
+                  className="font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+                >
+                  Sign in
+                </a>
+              </p>
 
-                <Field<FormValues>
-                  id="confirmPassword"
-                  label="Confirm"
-                  type={showConfirm ? "text" : "password"}
-                  register={register}
-                  error={errors.confirmPassword?.message}
-                  right={
-                    <Toggle
-                      show={showConfirm}
-                      onToggle={() => setShowConfirm((v) => !v)}
-                    />
-                  }
-                />
-              </div>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field<FormValues>
+                    id="fullName"
+                    label="Full Name"
+                    register={register}
+                    error={errors.fullName?.message}
+                    icon={<User className="w-4 h-4" />}
+                  />
 
-              <PasswordStrength password={password} />
+                  <Field<FormValues>
+                    id="email"
+                    label="Email"
+                    type="email"
+                    register={register}
+                    error={errors.email?.message}
+                    icon={<Mail className="w-4 h-4" />}
+                  />
+                </div>
 
-              <button className="w-full h-11 bg-emerald-500 text-black">
-                {loading ? "Creating..." : "Create account"}
-              </button>
-            </form>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field<FormValues>
+                    id="password"
+                    label="Password"
+                    type={showPass ? "text" : "password"}
+                    register={register}
+                    error={errors.password?.message}
+                    icon={<Lock className="w-4 h-4" />}
+                    right={
+                      <Toggle
+                        show={showPass}
+                        onToggle={() => setShowPass((v) => !v)}
+                      />
+                    }
+                  />
+
+                  <Field<FormValues>
+                    id="confirmPassword"
+                    label="Confirm"
+                    type={showConfirm ? "text" : "password"}
+                    register={register}
+                    error={errors.confirmPassword?.message}
+                    icon={<Lock className="w-4 h-4" />}
+                    right={
+                      <Toggle
+                        show={showConfirm}
+                        onToggle={() => setShowConfirm((v) => !v)}
+                      />
+                    }
+                  />
+                </div>
+
+                <PasswordStrength password={password} />
+
+                {submitError && (
+                  <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3 text-center">
+                    {submitError}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create account"
+                  )}
+                </button>
+              </form>
+            </>
           )}
         </div>
       </div>
-      <DevTool control={control} />
     </main>
   );
 }

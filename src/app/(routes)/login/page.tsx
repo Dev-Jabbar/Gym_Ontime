@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Dumbbell } from "lucide-react";
+import { Eye, EyeOff, Dumbbell, Mail, Lock } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
 
-// ─── Validation schema ────────────────────────────────────────────────────────
 const loginSchema = z.object({
   email: z
     .string()
@@ -19,12 +18,13 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-// ─── Page Component ───────────────────────────────────────────────────────────
 export default function LoginPage() {
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const {
     register,
     control,
@@ -51,7 +51,7 @@ export default function LoginPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", // 👈 required for cookies to be set
+          credentials: "include",
           body: JSON.stringify({
             email: values.email,
             password: values.password,
@@ -63,16 +63,8 @@ export default function LoginPage() {
         throw new Error("Login failed");
       }
 
-      // 🔑 The user store may already have hasFetched: true from an
-      // earlier, pre-login attempt to load /users/me that correctly
-      // failed (you weren't authenticated yet). Without this reset,
-      // useUser() on the next page trusts that stale "no user" result
-      // forever and never re-fetches — causing a permanently blank
-      // page until a manual refresh wipes the store clean.
-      // clearUser() resets hasFetched to false, forcing the next
-      // page's useUser() to fetch again — this time with a valid
-      // auth cookie just set by the login response above.
-      useUserStore.getState().clearUser();
+      const userData = await response.json();
+      useUserStore.getState().setUser({ ...userData, avatar: null });
 
       router.push("/");
     } catch (error) {
@@ -89,216 +81,146 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{
-        backgroundColor: "#111313",
-        backgroundImage:
-          "radial-gradient(circle, #2a2d2d 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
-        fontFamily: "'Geist', 'Inter', sans-serif",
-      }}
-    >
-      {/* ── Card ── */}
-      <div
-        className="w-full max-w-md rounded-3xl p-10 shadow-2xl"
-        style={{ backgroundColor: "#1a1d1d" }}
-      >
-        {/* Brand mark */}
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 md:p-10">
+        {/* Logo — same lockup as the app header */}
         <div className="flex items-center gap-2 mb-8">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: "orange" }}
-          >
-            <Dumbbell className="w-4 h-4  text-white" strokeWidth={2.5} />
+          <div className="w-9 h-9 rounded-lg bg-orange-500 flex items-center justify-center">
+            <Dumbbell className="w-4 h-4 text-white" strokeWidth={2.5} />
           </div>
-          <span
-            className="text-sm font-semibold uppercase"
-            style={{ color: "orange", letterSpacing: "0.18em" }}
-          >
-            Welcome Back
+          <span className="text-xl font-extrabold tracking-wide text-gray-900">
+            Gym<span className="text-orange-500">Ontime</span>
           </span>
         </div>
 
-        {/* Heading */}
-        <h1
-          className="text-3xl font-extrabold mb-2 leading-tight"
-          style={{ color: "#f0f4f4" }}
-        >
-          Sign in to GymOntime
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+          Welcome back
         </h1>
-
-        {/* Sub-heading */}
-        <p className="text-sm mb-8" style={{ color: "#8a9494" }}>
+        <p className="text-sm text-gray-500 mb-8">
           Don't have an account?{" "}
           <a
             href="/register"
-            className="font-semibold hover:opacity-80 transition-opacity"
-            style={{ color: "#2db87a" }}
+            className="font-semibold text-orange-500 hover:text-orange-600 transition-colors"
           >
             Create one free
           </a>
         </p>
 
-        {/* ── Form ── */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
           className="space-y-5"
         >
-          {/* Email */}
-          <div className="space-y-2">
+          <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium"
-              style={{ color: "#c4cccc" }}
+              className="block text-sm font-medium text-gray-700 mb-1.5"
             >
               Email address
             </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="vintage@gmail.com"
-              autoComplete="email"
-              {...register("email")}
-              className="w-full h-12 rounded-xl px-4 text-sm outline-none transition-all"
-              style={{
-                backgroundColor: "#242828",
-                color: "#f0f4f4",
-                border: errors.email
-                  ? "1px solid #f87171"
-                  : "1px solid transparent",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "#2db87a")}
-              onBlur={(e) =>
-                (e.target.style.borderColor = errors.email
-                  ? "#f87171"
-                  : "transparent")
-              }
-            />
+            <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <Mail className="w-4 h-4" />
+              </div>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                {...register("email")}
+                className={`w-full h-12 pl-11 pr-4 rounded-xl text-sm text-gray-900 transition-all focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 ${
+                  errors.email
+                    ? "bg-red-50/50 border border-red-300"
+                    : "bg-gray-50 border border-transparent"
+                }`}
+              />
+            </div>
             {errors.email && (
-              <p className="text-xs" style={{ color: "#f87171" }}>
+              <p className="text-xs text-red-500 mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
 
-          {/* Password */}
-          <div className="space-y-2">
+          <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium"
-              style={{ color: "#c4cccc" }}
+              className="block text-sm font-medium text-gray-700 mb-1.5"
             >
               Password
             </label>
             <div className="relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <Lock className="w-4 h-4" />
+              </div>
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 {...register("password")}
-                className="w-full h-12 rounded-xl px-4 pr-11 text-sm outline-none transition-all"
-                style={{
-                  backgroundColor: "#242828",
-                  color: "#f0f4f4",
-                  border: errors.password
-                    ? "1px solid #f87171"
-                    : "1px solid transparent",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "#2db87a")}
-                onBlur={(e) =>
-                  (e.target.style.borderColor = errors.password
-                    ? "#f87171"
-                    : "transparent")
-                }
+                className={`w-full h-12 pl-11 pr-11 rounded-xl text-sm text-gray-900 transition-all focus:outline-none focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 ${
+                  errors.password
+                    ? "bg-red-50/50 border border-red-300"
+                    : "bg-gray-50 border border-transparent"
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:opacity-70 transition-opacity"
-                style={{ color: "#6a7474" }}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
               >
                 {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
+                  <EyeOff className="w-4 h-4" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <Eye className="w-4 h-4" />
                 )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs" style={{ color: "#f87171" }}>
+              <p className="text-xs text-red-500 mt-1">
                 {errors.password.message}
               </p>
             )}
           </div>
 
-          {/* Forgot password */}
           <div className="flex justify-end">
             <a
               href="/forgot-password"
-              className="text-sm hover:opacity-70 transition-opacity"
-              style={{ color: "#8a9494" }}
+              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Forgot password ?
+              Forgot password?
             </a>
           </div>
-          {/* API Error Message */}
+
           {errorMessage && (
-            <p className="text-sm text-center" style={{ color: "#f87171" }}>
+            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3 text-center">
               {errorMessage}
             </p>
           )}
-          {/* Submit */}
+
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-xl font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
-            style={{
-              backgroundColor: "#2db87a",
-              height: "52px",
-              fontSize: "16px",
-            }}
+            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  />
-                </svg>
-                Signing in…
-              </span>
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />
+                Signing in...
+              </>
             ) : (
               "Sign in"
             )}
           </button>
         </form>
 
-        {/* Bottom link */}
-        <p className="text-sm text-center mt-8" style={{ color: "#8a9494" }}>
-          New to GymOntime ?{" "}
+        <p className="text-sm text-center text-gray-500 mt-8">
+          New to GymOntime?{" "}
           <a
             href="/register"
-            className="font-semibold hover:opacity-80 transition-opacity"
-            style={{ color: "#2db87a" }}
+            className="font-semibold text-orange-500 hover:text-orange-600 transition-colors"
           >
             Create an account
           </a>

@@ -61,7 +61,7 @@ export function ClassCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow ${
+      className={`bg-white rounded-xl shadow-2xl overflow-hidden hover:shadow-lg transition-shadow ${
         classData.image ? "cursor-pointer" : ""
       }`}
     >
