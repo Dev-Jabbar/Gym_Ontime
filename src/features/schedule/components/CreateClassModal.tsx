@@ -16,15 +16,13 @@ interface CreateClassForm {
   schedule: string;
   duration: number;
   capacity: number;
-  recurrence: "none" | "daily" | "weekly" | "monthly";
+  recurrence: "none" | "daily" | "weekly";
   recurrenceDays: string[];
   trainer: string;
   oneTime: number;
   weekly: number;
   monthly: number;
-  quarterly: number;
-  biannual: number;
-  yearly: number;
+  threeMonths: number;
 }
 
 interface CreateClassModalProps {
@@ -32,7 +30,7 @@ interface CreateClassModalProps {
   onSuccess: () => void;
 }
 
-const MIN_PRICE = 500;
+const MIN_PRICE = 1500;
 const MAX_PRICE = 500000;
 
 const DAYS_OF_WEEK = [
@@ -45,14 +43,35 @@ const DAYS_OF_WEEK = [
   { value: "sunday", label: "Sun" },
 ];
 
-const calculatePrices = (perSession: number) => {
-  if (!perSession || perSession < MIN_PRICE) return null;
+// Real session counts, tied to how the class actually recurs —
+// previously this assumed a fixed 4 sessions/week for EVERY class
+// regardless of its actual schedule, which is why a class meeting
+// only 3x/week (or 7x/week for daily) still got priced as if it met
+// exactly 4x/week. That mismatch compounds badly the longer the tier.
+const getSessionsPerWeek = (
+  recurrence: "none" | "daily" | "weekly",
+  selectedDays: string[],
+): number => {
+  if (recurrence === "daily") return 7;
+  if (recurrence === "weekly") return Math.max(selectedDays.length, 1);
+  return 0; // "none" — no subscription tiers apply to a one-off class
+};
+
+const calculatePrices = (perSession: number, sessionsPerWeek: number) => {
+  if (!perSession || perSession < MIN_PRICE || sessionsPerWeek === 0) {
+    return null;
+  }
+
+  // 4.33 = average weeks per month (52 weeks / 12 months), not a
+  // flat "4" — small difference, but it's the actual number and adds
+  // up over a year.
+  const monthlySessions = Math.round(sessionsPerWeek * 4.33);
+  const threeMonthsSessions = sessionsPerWeek * 13; // 13 weeks in 3 months
+
   return {
-    weekly: Math.round(perSession * 4 * 0.9),
-    monthly: Math.round(perSession * 16 * 0.8),
-    quarterly: Math.round(perSession * 48 * 0.72),
-    biannual: Math.round(perSession * 96 * 0.64),
-    yearly: Math.round(perSession * 192 * 0.56),
+    weekly: Math.round(perSession * sessionsPerWeek * 0.9), // 10% off
+    monthly: Math.round(perSession * monthlySessions * 0.8), // 20% off
+    threeMonths: Math.round(perSession * threeMonthsSessions * 0.7), // 30% off
   };
 };
 
@@ -120,25 +139,27 @@ export function CreateClassModal({
       oneTime: 0,
       weekly: 0,
       monthly: 0,
-      quarterly: 0,
-      biannual: 0,
-      yearly: 0,
+      threeMonths: 0,
     },
   });
 
   const perSessionPrice = useWatch({ control, name: "oneTime" });
   const recurrence = watch("recurrence");
 
+  const sessionsPerWeek = getSessionsPerWeek(recurrence, selectedDays);
+
   useEffect(() => {
-    const prices = calculatePrices(Number(perSessionPrice));
+    const prices = calculatePrices(Number(perSessionPrice), sessionsPerWeek);
     if (prices) {
       setValue("weekly", prices.weekly);
       setValue("monthly", prices.monthly);
-      setValue("quarterly", prices.quarterly);
-      setValue("biannual", prices.biannual);
-      setValue("yearly", prices.yearly);
+      setValue("threeMonths", prices.threeMonths);
     }
-  }, [perSessionPrice, setValue]);
+    // Recalculates on every relevant change — previously this only
+    // depended on perSessionPrice, so toggling which days a class
+    // meets on never updated the subscription prices at all, even
+    // though session count (and therefore price) directly depends on it.
+  }, [perSessionPrice, sessionsPerWeek, setValue]);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
@@ -197,9 +218,9 @@ export function CreateClassModal({
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
               ...(data.monthly && { monthly: Number(data.monthly) }),
-              ...(data.quarterly && { quarterly: Number(data.quarterly) }),
-              ...(data.biannual && { biannual: Number(data.biannual) }),
-              ...(data.yearly && { yearly: Number(data.yearly) }),
+              ...(data.threeMonths && {
+                threeMonths: Number(data.threeMonths),
+              }),
             },
           }),
         },
@@ -223,12 +244,29 @@ export function CreateClassModal({
   const labelClass = "block text-sm font-medium text-gray-600 mb-1";
   const errorClass = "text-xs text-red-500 mt-1";
 
+  // Real session counts for this specific class's schedule, shown next
+  // to each tier so the admin can see WHY a price is what it is —
+  // previously these were hardcoded (4/16/48/96/192) regardless of how
+  // often the class actually meets.
   const pricingRows = [
-    { key: "weekly", label: "Weekly", sessions: 4, discount: "10% off" },
-    { key: "monthly", label: "Monthly", sessions: 16, discount: "20% off" },
-    { key: "quarterly", label: "Quarterly", sessions: 48, discount: "28% off" },
-    { key: "biannual", label: "Biannual", sessions: 96, discount: "36% off" },
-    { key: "yearly", label: "Yearly", sessions: 192, discount: "44% off" },
+    {
+      key: "weekly",
+      label: "Weekly",
+      sessions: sessionsPerWeek,
+      discount: "10% off",
+    },
+    {
+      key: "monthly",
+      label: "Monthly",
+      sessions: Math.round(sessionsPerWeek * 4.33),
+      discount: "20% off",
+    },
+    {
+      key: "threeMonths",
+      label: "3 Months",
+      sessions: sessionsPerWeek * 13,
+      discount: "30% off",
+    },
   ];
 
   return (
@@ -443,7 +481,7 @@ export function CreateClassModal({
               type="number"
               min={MIN_PRICE}
               max={MAX_PRICE}
-              placeholder="e.g. 5000"
+              placeholder="e.g. 1500"
               className={inputClass}
             />
             {errors.oneTime && (
@@ -467,6 +505,9 @@ export function CreateClassModal({
                     <div className="w-32 flex-shrink-0">
                       <p className="text-sm font-medium text-gray-700">
                         {item.label}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {item.sessions} session{item.sessions !== 1 ? "s" : ""}
                       </p>
                       <p className="text-xs text-green-600">{item.discount}</p>
                     </div>

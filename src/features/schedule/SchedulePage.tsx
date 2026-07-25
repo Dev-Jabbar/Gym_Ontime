@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { TbPlus } from "react-icons/tb";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSchedule, useClassFilters } from "./hooks/useSchedule";
+import { useBookedClasses } from "./hooks/useBookedClasses";
 import {
   DateNavigator,
   SearchFilter,
@@ -21,6 +22,8 @@ export function SchedulePage({
   userId,
   trainerProfileId,
 }: ScheduleProps) {
+
+  console.log("🔥 SchedulePage rendered");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,7 +39,23 @@ export function SchedulePage({
   const [cancelError, setCancelError] = useState<string | null>(null);
 
   const { classes, loading, refetch } = useSchedule(selectedDate);
-  const filteredClasses = useClassFilters(classes, filterStatus, searchQuery);
+
+  // Which classes the current member already has valid access to —
+  // used both to show "Booked" instead of "Book Now" on each card, and
+  // for the new "Booked" filter option. No-op for admin/trainer roles
+  // (returns an empty set immediately). Computed BEFORE useClassFilters
+  // since that hook needs it to handle the "booked" filter.
+  const { bookedClassIds } = useBookedClasses(userRole);
+
+  const filteredClasses = useClassFilters(
+    classes,
+    filterStatus,
+    searchQuery,
+    bookedClassIds,
+  );
+
+
+  console.log("filteredClasses:", filteredClasses);
 
   // Auto-open the create modal when arriving via ?action=create — e.g.
   // from the dashboard's "Create New Class" Quick Action, since this
@@ -155,6 +174,7 @@ export function SchedulePage({
             <SearchFilter
               searchQuery={searchQuery}
               filterStatus={filterStatus}
+              userRole={userRole}
               onSearchChange={setSearchQuery}
               onFilterChange={setFilterStatus}
             />
@@ -175,6 +195,7 @@ export function SchedulePage({
                 onEdit={handleEditClass}
                 onCancel={handleCancelClass}
                 trainerProfileId={trainerProfileId}
+                isBooked={bookedClassIds.has(cls.id)}
               />
             ))}
           </div>

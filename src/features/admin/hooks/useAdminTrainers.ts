@@ -43,14 +43,7 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
 
       // Profile extras are best-effort — a failed fetch here shouldn't
       // block the trainer list from rendering.
-      let profileByUserId: Record<
-        string,
-        {
-          avatar: string | null;
-          specialty: string | null;
-          experience: number | null;
-        }
-      > = {};
+      let profileByUserId: Record<string, any> = {};
       if (profilesRes.ok) {
         const profilesData = await profilesRes.json();
         const profiles: any[] = Array.isArray(profilesData)
@@ -69,11 +62,15 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
                 avatar: profile.avatar ?? null,
                 specialty: profile.specialty ?? null,
                 experience: profile.experience ?? null,
+                bio: profile.bio ?? null,
+                phone: profile.phone ?? null,
+                certifications: profile.certifications ?? [],
+                availability: profile.availability ?? null,
               };
             }
             return acc;
           },
-          {} as typeof profileByUserId,
+          {} as Record<string, any>,
         );
       }
 
@@ -83,12 +80,19 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
       // "deleted" trainer would keep reappearing after refetch.
       const onlyTrainers = users
         .filter((u) => u.role === "trainer" && u.isActive !== false)
-        .map((u) => ({
-          ...u,
-          avatar: profileByUserId[u._id]?.avatar ?? u.avatar ?? null,
-          specialty: profileByUserId[u._id]?.specialty ?? null,
-          experience: profileByUserId[u._id]?.experience ?? null,
-        }))
+        .map((u) => {
+          const profile = profileByUserId[u._id] ?? {};
+          return {
+            ...u,
+            avatar: profile.avatar ?? u.avatar ?? null,
+            specialty: profile.specialty ?? null,
+            experience: profile.experience ?? null,
+            bio: profile.bio ?? null,
+            phone: profile.phone ?? null,
+            certifications: profile.certifications ?? [],
+            availability: profile.availability ?? null,
+          };
+        })
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

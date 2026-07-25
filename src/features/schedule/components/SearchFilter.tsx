@@ -5,6 +5,7 @@ import type { SearchFilterProps } from "../types";
 export function SearchFilter({
   searchQuery,
   filterStatus,
+  userRole,
   onSearchChange,
   onFilterChange,
 }: SearchFilterProps) {
@@ -32,6 +33,9 @@ export function SearchFilter({
         <option value="upcoming">Upcoming</option>
         <option value="ongoing">Ongoing</option>
         <option value="completed">Completed</option>
+        {/* Only members can "book" a class, so only they get this
+            filter option — admins/trainers have no concept of it. */}
+        {userRole === "member" && <option value="booked">Booked</option>}
       </select>
     </div>
   );

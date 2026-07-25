@@ -45,16 +45,17 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
         ? usersData
         : (usersData.data ?? []);
 
-      // Avatars are best-effort: if this call fails for any reason,
-      // fall back to no avatars rather than failing the whole page.
-      let avatarByUserId: Record<string, string | null> = {};
+      // Avatars (and now full profile details) are best-effort: if this
+      // call fails for any reason, fall back to just the base user data
+      // rather than failing the whole page.
+      let profileByUserId: Record<string, any> = {};
       if (profilesRes.ok) {
         const profilesData = await profilesRes.json();
         const profiles: any[] = Array.isArray(profilesData)
           ? profilesData
           : (profilesData.data ?? []);
 
-        avatarByUserId = profiles.reduce(
+        profileByUserId = profiles.reduce(
           (acc, profile) => {
             // userId may come back as a raw ObjectId string, or as a
             // populated object ({ _id, name, email }) — handle both.
@@ -63,10 +64,24 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
                 ? profile.userId
                 : profile.userId?._id;
 
-            if (userId) acc[userId] = profile.avatar ?? null;
+            if (userId) {
+              acc[userId] = {
+                avatar: profile.avatar ?? null,
+                phone: profile.phone ?? null,
+                gender: profile.gender ?? null,
+                fitnessGoal: profile.fitnessGoal ?? null,
+                healthNotes: profile.healthNotes ?? null,
+                emergencyContact: profile.emergencyContact ?? null,
+                // The MemberProfile document's own _id — needed later
+                // to fetch "classes joined" via
+                // GET /classes/by-member/:memberProfileId, since Class
+                // .members references MemberProfile, not User.
+                memberProfileId: profile._id ?? null,
+              };
+            }
             return acc;
           },
-          {} as Record<string, string | null>,
+          {} as Record<string, any>,
         );
       }
 
@@ -78,10 +93,19 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
       //   check a "deleted" member would keep reappearing after refetch.
       const onlyMembers = users
         .filter((u) => u.role === "member" && u.isActive !== false)
-        .map((u) => ({
-          ...u,
-          avatar: avatarByUserId[u._id] ?? u.avatar ?? null,
-        }))
+        .map((u) => {
+          const profile = profileByUserId[u._id] ?? {};
+          return {
+            ...u,
+            avatar: profile.avatar ?? u.avatar ?? null,
+            phone: profile.phone ?? null,
+            gender: profile.gender ?? null,
+            fitnessGoal: profile.fitnessGoal ?? null,
+            healthNotes: profile.healthNotes ?? null,
+            emergencyContact: profile.emergencyContact ?? null,
+            memberProfileId: profile.memberProfileId ?? undefined,
+          };
+        })
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

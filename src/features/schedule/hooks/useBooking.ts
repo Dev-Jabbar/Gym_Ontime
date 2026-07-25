@@ -3,12 +3,7 @@
 import { useState } from "react";
 
 type PaymentType = "one-time" | "subscription";
-type SubscriptionInterval =
-  | "weekly"
-  | "monthly"
-  | "quarterly"
-  | "biannual"
-  | "yearly";
+type SubscriptionInterval = "weekly" | "monthly" | "threeMonths";
 
 interface InitiatePaymentParams {
   classId: string;

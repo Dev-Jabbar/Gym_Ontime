@@ -16,20 +16,21 @@ export interface Class {
   schedule: string;
   trainer: {
     id: string;
-    // The User._id behind this TrainerProfile — needed to pre-select
-    // the correct option in a <select> dropdown that's keyed by
-    // User._id (matching how the admin trainer list is built).
     userId: string;
     name: string;
     avatar: string;
+    bio?: string | null;
+    specialty?: string | null;
+    phone?: string | null;
+    experience?: number | null;
+    certifications?: string[];
+    availability?: string | null;
   };
   pricing: {
     oneTime?: number;
     weekly?: number;
     monthly?: number;
-    quarterly?: number;
-    biannual?: number;
-    yearly?: number;
+    threeMonths?: number;
   };
   capacity: number;
   enrolled: number;
@@ -42,8 +43,27 @@ export interface Class {
   image?: string | null;
 }
 
+export interface ClassMember {
+  _id: string;
+  avatar?: string | null;
+  phone?: string;
+  gender?: string;
+  fitnessGoal?: string;
+  isActive: boolean;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+}
+
 export type UserRole = "admin" | "trainer" | "member";
-export type FilterStatus = "all" | "upcoming" | "ongoing" | "completed";
+export type FilterStatus =
+  | "all"
+  | "upcoming"
+  | "ongoing"
+  | "completed"
+  | "booked";
 
 export interface ScheduleProps {
   userRole: UserRole;
@@ -58,6 +78,10 @@ export interface ClassCardProps {
   onEdit?: (classId: string) => void;
   onCancel?: (classId: string) => void;
   trainerProfileId?: string;
+  // Whether the current member already has valid access to this class
+  // (completed one-time payment, or an active non-expired subscription).
+  // Undefined/omitted for non-member roles, where it's irrelevant.
+  isBooked?: boolean;
 }
 
 export interface DateNavigatorProps {
@@ -71,6 +95,7 @@ export interface DateNavigatorProps {
 export interface SearchFilterProps {
   searchQuery: string;
   filterStatus: FilterStatus;
+  userRole: UserRole;
   onSearchChange: (query: string) => void;
   onFilterChange: (status: FilterStatus) => void;
 }

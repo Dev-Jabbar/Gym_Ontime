@@ -5,6 +5,7 @@ import Image from "next/image";
 import { TbTrash, TbCheck, TbX, TbBriefcase } from "react-icons/tb";
 import type { AdminTrainer } from "@/features/admin/types";
 import { getAvatarFallback } from "@/lib/getAvatarFallback";
+import { AdminTrainerDetailsModal } from "./AdminTrainerDetailsModal";
 
 interface AdminTrainerCardProps {
   trainer: AdminTrainer;
@@ -18,6 +19,7 @@ export function AdminTrainerCard({
   onDelete,
 }: AdminTrainerCardProps) {
   const [confirming, setConfirming] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const avatar = trainer.avatar ?? getAvatarFallback(trainer.name, 48);
 
@@ -33,74 +35,99 @@ export function AdminTrainerCard({
     setConfirming(false);
   };
 
+  // Buttons need to keep working normally without also opening the
+  // details modal — each stops its click from bubbling up to the card.
+  const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
+
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4">
-      {/* next/image — Cloudinary + ui-avatars allowlisted in
-          next.config.js. */}
-      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
-        <Image
-          src={avatar}
-          alt={trainer.name}
-          width={48}
-          height={48}
-          className="object-cover w-full h-full"
-        />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900 truncate">{trainer.name}</p>
-        <p className="text-sm text-gray-500 truncate">{trainer.email}</p>
-
-        <div className="flex flex-wrap gap-3 mt-1">
-          {trainer.specialty && (
-            <span className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-              <TbBriefcase className="w-3 h-3" />
-              {trainer.specialty}
-            </span>
-          )}
-          {trainer.experience != null && (
-            <span className="text-xs text-gray-500">
-              {trainer.experience} yr{trainer.experience !== 1 ? "s" : ""} exp
-            </span>
-          )}
+    <>
+      <div
+        onClick={() => setShowDetails(true)}
+        className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow"
+      >
+        {/* next/image — Cloudinary + ui-avatars allowlisted in
+            next.config.js. */}
+        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
+          <Image
+            src={avatar}
+            alt={trainer.name}
+            width={48}
+            height={48}
+            className="object-cover w-full h-full"
+          />
         </div>
 
-        <p className="text-xs text-gray-400 mt-1">Joined {joinedDate}</p>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-gray-900 truncate">{trainer.name}</p>
+          <p className="text-sm text-gray-500 truncate">{trainer.email}</p>
 
-        <div className="mt-3">
-          {confirming ? (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-600">
-                Delete this trainer?
+          <div className="flex flex-wrap gap-3 mt-1">
+            {trainer.specialty && (
+              <span className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
+                <TbBriefcase className="w-3 h-3" />
+                {trainer.specialty}
               </span>
+            )}
+            {trainer.experience != null && (
+              <span className="text-xs text-gray-500">
+                {trainer.experience} yr{trainer.experience !== 1 ? "s" : ""} exp
+              </span>
+            )}
+          </div>
+
+          <p className="text-xs text-gray-400 mt-1">Joined {joinedDate}</p>
+
+          <div className="mt-3">
+            {confirming ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-600">
+                  Delete this trainer?
+                </span>
+                <button
+                  onClick={(e) => {
+                    stopPropagation(e);
+                    handleConfirm();
+                  }}
+                  disabled={isLoading}
+                  className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
+                >
+                  <TbCheck className="w-3.5 h-3.5" />
+                  {isLoading ? "..." : "Confirm"}
+                </button>
+                <button
+                  onClick={(e) => {
+                    stopPropagation(e);
+                    setConfirming(false);
+                  }}
+                  disabled={isLoading}
+                  className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50"
+                >
+                  <TbX className="w-3.5 h-3.5" />
+                  Cancel
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={handleConfirm}
-                disabled={isLoading}
-                className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
+                onClick={(e) => {
+                  stopPropagation(e);
+                  setConfirming(true);
+                }}
+                className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100"
               >
-                <TbCheck className="w-3.5 h-3.5" />
-                {isLoading ? "..." : "Confirm"}
+                <TbTrash className="w-3.5 h-3.5" />
+                Delete
               </button>
-              <button
-                onClick={() => setConfirming(false)}
-                disabled={isLoading}
-                className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50"
-              >
-                <TbX className="w-3.5 h-3.5" />
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setConfirming(true)}
-              className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100"
-            >
-              <TbTrash className="w-3.5 h-3.5" />
-              Delete
-            </button>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {showDetails && (
+        <AdminTrainerDetailsModal
+          trainer={trainer}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
+    </>
   );
 }

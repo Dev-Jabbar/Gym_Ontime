@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { getAvatarFallback } from "@/lib/getAvatarFallback";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { IoMenu, IoClose } from "react-icons/io5";
 import {
   TbDashboard,
@@ -159,6 +160,7 @@ export default function Header({
 
           {/* Desktop User Menu */}
           <div className="hidden lg:flex items-center gap-4">
+            <NotificationBell />
             <div className="px-3 py-1 bg-gray-800 rounded-full">
               <span className="text-xs font-medium text-gray-300 capitalize">
                 {userRole}
@@ -223,13 +225,13 @@ export default function Header({
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden text-3xl"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <IoClose /> : <IoMenu />}
-          </button>
+          {/* Mobile: bell always visible, next to the hamburger */}
+          <div className="lg:hidden flex items-center gap-3">
+            <NotificationBell />
+            <button className="text-3xl" onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? <IoClose /> : <IoMenu />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

@@ -52,6 +52,7 @@ export default function Schedule({ userRole, userId }: ScheduleProps) {
 
   useEffect(() => {
     fetchClasses();
+    filteredClasses;
   }, [selectedDate]);
 
   useEffect(() => {

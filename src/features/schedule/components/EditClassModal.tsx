@@ -22,9 +22,7 @@ interface EditClassForm {
   oneTime: number;
   weekly: number;
   monthly: number;
-  quarterly: number;
-  biannual: number;
-  yearly: number;
+  threeMonths: number;
 }
 
 interface EditClassModalProps {
@@ -33,7 +31,7 @@ interface EditClassModalProps {
   onSuccess: () => void;
 }
 
-const MIN_PRICE = 500;
+const MIN_PRICE = 1500;
 const MAX_PRICE = 500000;
 
 const DAYS_OF_WEEK = [
@@ -46,14 +44,30 @@ const DAYS_OF_WEEK = [
   { value: "sunday", label: "Sun" },
 ];
 
-const calculatePrices = (perSession: number) => {
-  if (!perSession || perSession < MIN_PRICE) return null;
+// Same fix as CreateClassModal — session counts now reflect how the
+// class actually recurs, instead of assuming a fixed 4/week for
+// everything regardless of its real schedule.
+const getSessionsPerWeek = (
+  recurrence: "none" | "daily" | "weekly",
+  selectedDays: string[],
+): number => {
+  if (recurrence === "daily") return 7;
+  if (recurrence === "weekly") return Math.max(selectedDays.length, 1);
+  return 0;
+};
+
+const calculatePrices = (perSession: number, sessionsPerWeek: number) => {
+  if (!perSession || perSession < MIN_PRICE || sessionsPerWeek === 0) {
+    return null;
+  }
+
+  const monthlySessions = Math.round(sessionsPerWeek * 4.33);
+  const threeMonthsSessions = sessionsPerWeek * 13;
+
   return {
-    weekly: Math.round(perSession * 4 * 0.9),
-    monthly: Math.round(perSession * 16 * 0.8),
-    quarterly: Math.round(perSession * 48 * 0.72),
-    biannual: Math.round(perSession * 96 * 0.64),
-    yearly: Math.round(perSession * 192 * 0.56),
+    weekly: Math.round(perSession * sessionsPerWeek * 0.9),
+    monthly: Math.round(perSession * monthlySessions * 0.8),
+    threeMonths: Math.round(perSession * threeMonthsSessions * 0.7),
   };
 };
 
@@ -131,32 +145,34 @@ export function EditClassModal({
       oneTime: classData.pricing.oneTime ?? 0,
       weekly: classData.pricing.weekly ?? 0,
       monthly: classData.pricing.monthly ?? 0,
-      quarterly: classData.pricing.quarterly ?? 0,
-      biannual: classData.pricing.biannual ?? 0,
-      yearly: classData.pricing.yearly ?? 0,
+      threeMonths: classData.pricing.threeMonths ?? 0,
     },
   });
 
   const perSessionPrice = useWatch({ control, name: "oneTime" });
   const recurrence = watch("recurrence");
+  const sessionsPerWeek = getSessionsPerWeek(recurrence, selectedDays);
 
   useEffect(() => {
     if (autoCalculated) {
-      const prices = calculatePrices(Number(perSessionPrice));
+      const prices = calculatePrices(Number(perSessionPrice), sessionsPerWeek);
       if (prices) {
         setValue("weekly", prices.weekly);
         setValue("monthly", prices.monthly);
-        setValue("quarterly", prices.quarterly);
-        setValue("biannual", prices.biannual);
-        setValue("yearly", prices.yearly);
+        setValue("threeMonths", prices.threeMonths);
       }
     }
-  }, [perSessionPrice, setValue, autoCalculated]);
+  }, [perSessionPrice, sessionsPerWeek, setValue, autoCalculated]);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
+    // Changing which days a class meets changes its real session count,
+    // which is exactly what the subscription prices are supposed to be
+    // based on — so this counts as an explicit change, same as editing
+    // the per-session price directly.
+    setAutoCalculated(true);
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,9 +234,9 @@ export function EditClassModal({
               ...(data.oneTime && { oneTime: Number(data.oneTime) }),
               ...(data.weekly && { weekly: Number(data.weekly) }),
               ...(data.monthly && { monthly: Number(data.monthly) }),
-              ...(data.quarterly && { quarterly: Number(data.quarterly) }),
-              ...(data.biannual && { biannual: Number(data.biannual) }),
-              ...(data.yearly && { yearly: Number(data.yearly) }),
+              ...(data.threeMonths && {
+                threeMonths: Number(data.threeMonths),
+              }),
             },
           }),
         },
@@ -245,11 +261,24 @@ export function EditClassModal({
   const errorClass = "text-xs text-red-500 mt-1";
 
   const pricingRows = [
-    { key: "weekly", label: "Weekly", discount: "10% off" },
-    { key: "monthly", label: "Monthly", discount: "20% off" },
-    { key: "quarterly", label: "Quarterly", discount: "28% off" },
-    { key: "biannual", label: "Biannual", discount: "36% off" },
-    { key: "yearly", label: "Yearly", discount: "44% off" },
+    {
+      key: "weekly",
+      label: "Weekly",
+      sessions: sessionsPerWeek,
+      discount: "10% off",
+    },
+    {
+      key: "monthly",
+      label: "Monthly",
+      sessions: Math.round(sessionsPerWeek * 4.33),
+      discount: "20% off",
+    },
+    {
+      key: "threeMonths",
+      label: "3 Months",
+      sessions: sessionsPerWeek * 13,
+      discount: "30% off",
+    },
   ];
 
   return (
@@ -480,6 +509,9 @@ export function EditClassModal({
                     <div className="w-32 flex-shrink-0">
                       <p className="text-sm font-medium text-gray-700">
                         {item.label}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {item.sessions} session{item.sessions !== 1 ? "s" : ""}
                       </p>
                       <p className="text-xs text-green-600">{item.discount}</p>
                     </div>

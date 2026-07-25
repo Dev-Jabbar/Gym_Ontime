@@ -5,12 +5,7 @@ import { TbX, TbRefresh, TbClock } from "react-icons/tb";
 import { useBooking } from "../hooks/useBooking";
 import type { Class } from "../types";
 
-type SubscriptionInterval =
-  | "weekly"
-  | "monthly"
-  | "quarterly"
-  | "biannual"
-  | "yearly";
+type SubscriptionInterval = "weekly" | "monthly" | "threeMonths";
 
 interface PlanOption {
   key: "oneTime" | SubscriptionInterval;
@@ -22,9 +17,7 @@ const INTERVAL_LABELS: Record<string, string> = {
   oneTime: "One-time (per session)",
   weekly: "Weekly subscription",
   monthly: "Monthly subscription",
-  quarterly: "Quarterly subscription",
-  biannual: "Biannual subscription",
-  yearly: "Yearly subscription",
+  threeMonths: "3-Month subscription",
 };
 
 interface BookingModalProps {
@@ -36,6 +29,7 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
   const { initiatePayment, loading, error } = useBooking();
   const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null);
 
+  console.log("BookingModal rendered with classData:", classData); // Debugging line
   const isRecurring = classData.recurrence !== "none";
 
   // ✅ Filter plans based on recurrence
@@ -69,6 +63,7 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
     }
   };
 
+  console.log("selectedPlan:", selectedPlan); // Debugging line
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-md w-full p-6">
@@ -118,32 +113,37 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
         <p className="text-sm text-gray-600 mb-4">Choose a payment plan:</p>
 
         <div className="space-y-2 mb-6">
-          {planOptions.map((plan) => (
-            <label
-              key={plan.key}
-              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
-                selectedPlan?.key === plan.key
-                  ? "border-orange-500 bg-orange-50"
-                  : "border-gray-200 hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input
-                  type="radio"
-                  name="plan"
-                  checked={selectedPlan?.key === plan.key}
-                  onChange={() => setSelectedPlan(plan)}
-                  className="text-orange-500"
-                />
-                <span className="text-sm font-medium text-gray-900">
-                  {plan.label}
-                </span>
-              </div>
-              <span className="text-sm font-bold text-gray-900">
-                ₦{plan.price.toLocaleString()}
-              </span>
-            </label>
-          ))}
+          {planOptions.map(
+            (plan) => (
+              console.log("Rendering plan option:", plan),
+              (
+                <label
+                  key={plan.key}
+                  className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                    selectedPlan?.key === plan.key
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="plan"
+                      checked={selectedPlan?.key === plan.key}
+                      onChange={() => setSelectedPlan(plan)}
+                      className=""
+                    />
+                    <span className="text-sm font-medium text-gray-900">
+                      {plan.label}
+                    </span>
+                  </div>
+                  <span className="text-sm font-bold text-gray-900">
+                    ₦{plan.price.toLocaleString()}
+                  </span>
+                </label>
+              )
+            ),
+          )}
         </div>
 
         {error && (

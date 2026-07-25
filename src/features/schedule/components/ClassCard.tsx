@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { TbClock, TbUsers } from "react-icons/tb";
+import { TbClock, TbUsers, TbCheck } from "react-icons/tb";
 import { getStatusBadgeColor, getCapacityColor } from "../utils/formatters";
+import { getScheduleDisplay } from "../utils/scheduleDisplay";
 import type { ClassCardProps } from "../types";
 import { useRouter } from "next/navigation";
+import { ClassDetailsModal } from "./ClassDetailsModal";
 
 export function ClassCard({
   classData,
@@ -12,6 +14,7 @@ export function ClassCard({
   onEdit,
   onCancel,
   trainerProfileId,
+  isBooked,
 }: ClassCardProps) {
   const isFull = classData.enrolled >= classData.capacity;
   const capacityPercentage = (classData.enrolled / classData.capacity) * 100;
@@ -20,13 +23,12 @@ export function ClassCard({
   // Only classes with an image get the expand/collapse behavior — no
   // image means the card behaves exactly as it always did.
   const [expanded, setExpanded] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const isMyClass =
     userRole === "trainer" &&
     trainerProfileId &&
     classData.trainer.id === trainerProfileId;
-
-  const isRecurring = classData.recurrence !== "none";
 
   const handleCardClick = () => {
     if (classData.image) setExpanded((prev) => !prev);
@@ -61,7 +63,7 @@ export function ClassCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`bg-white rounded-xl shadow-2xl overflow-hidden hover:shadow-lg transition-shadow ${
+      className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow ${
         classData.image ? "cursor-pointer" : ""
       }`}
     >
@@ -106,42 +108,32 @@ export function ClassCard({
         </h3>
         <p className="text-sm text-gray-600 mb-4">{classData.description}</p>
 
-        {/* Time & Duration */}
+        {/* Schedule — shows a specific date for one-off classes, or
+            the recurrence pattern ("Every Mon, Wed, Fri") for recurring
+            ones, since a calendar date is misleading for something
+            that happens indefinitely. Replaces the old hardcoded date
+            display plus the separate blue "Every Mon, Wed..." line
+            below it, which duplicated this same information. */}
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
           <div className="flex items-center gap-1">
             <TbClock className="w-4 h-4" />
-            <span>
-              {new Date(classData.schedule).toLocaleDateString("en-NG", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                timeZone: "Africa/Lagos",
-              })}{" "}
-              •{" "}
-              {new Date(classData.schedule).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Africa/Lagos",
-              })}
-            </span>
+            <span>{getScheduleDisplay(classData)}</span>
           </div>
           <span>•</span>
           <span>{classData.duration}</span>
         </div>
 
-        {/* ✅ Recurrence days */}
-        {isRecurring && (classData.recurrenceDays?.length ?? 0) > 0 && (
-          <p className="text-xs text-blue-600 mb-4">
-            Every{" "}
-            {classData.recurrenceDays
-              ?.map((d) => d.charAt(0).toUpperCase() + d.slice(1, 3))
-              .join(", ")}
-          </p>
-        )}
-        {/* Trainer */}
-        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+        {/* Trainer — click to see class details, trainer bio, and
+            enrolled members */}
+        <button
+          type="button"
+          onClick={(e) => {
+            stopPropagation(e);
+            setShowDetails(true);
+          }}
+          className="w-full flex items-center gap-3 mb-4 pb-4 border-b border-gray-200 text-left hover:opacity-80 transition-opacity"
+        >
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
             <Image
               src={classData.trainer.avatar}
               alt={classData.trainer.name}
@@ -156,7 +148,7 @@ export function ClassCard({
               {classData.trainer.name}
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Capacity */}
         <div className="mb-4">
@@ -190,21 +182,32 @@ export function ClassCard({
         )}
 
         {/* Action Buttons */}
-        {userRole === "member" && classData.status === "upcoming" && (
-          <button
-            onClick={(e) => {
-              stopPropagation(e);
-              onBook(classData.id);
-            }}
-            disabled={isFull}
-            className={`w-full py-3 rounded-lg font-medium transition-colors ${
-              isFull
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 hover:bg-orange-600 text-white"
-            }`}
-          >
-            {isFull ? "Class Full" : "Book Now"}
-          </button>
+        {userRole === "member" && (
+          <>
+            {isBooked ? (
+              <div className="w-full py-3 rounded-lg font-medium bg-green-50 text-green-700 flex items-center justify-center gap-2">
+                <TbCheck className="w-4 h-4" />
+                Booked
+              </div>
+            ) : (
+              classData.status === "upcoming" && (
+                <button
+                  onClick={(e) => {
+                    stopPropagation(e);
+                    onBook(classData.id);
+                  }}
+                  disabled={isFull}
+                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                    isFull
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-orange-500 hover:bg-orange-600 text-white"
+                  }`}
+                >
+                  {isFull ? "Class Full" : "Book Now"}
+                </button>
+              )
+            )}
+          </>
         )}
 
         {userRole === "trainer" && isMyClass && (
@@ -243,6 +246,13 @@ export function ClassCard({
           </div>
         )}
       </div>
+
+      {showDetails && (
+        <ClassDetailsModal
+          classData={classData}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
     </div>
   );
 }
