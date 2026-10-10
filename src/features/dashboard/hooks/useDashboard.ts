@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback } from "react";
 import { DashboardStats, UserRole } from "@/features/dashboard/types";
 import { INITIAL_STATS } from "@/features/dashboard/constants/mockData";
@@ -24,10 +25,10 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
     try {
       if (userRole === "member") {
         const [classesRes, paymentsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
+          fetch(`${getApiUrl()}/classes`, {
             credentials: "include",
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/my-payments`, {
+          fetch(`${getApiUrl()}/payments/my-payments`, {
             credentials: "include",
           }),
         ]);
@@ -110,13 +111,13 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         }));
       } else if (userRole === "admin") {
         const [usersRes, classesRes, paymentsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+          fetch(`${getApiUrl()}/users`, {
             credentials: "include",
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
+          fetch(`${getApiUrl()}/classes`, {
             credentials: "include",
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments`, {
+          fetch(`${getApiUrl()}/payments`, {
             credentials: "include",
           }),
         ]);
@@ -238,7 +239,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         }));
       } else if (userRole === "trainer") {
         const classesRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/trainers/my-classes`,
+          `${getApiUrl()}/trainers/my-classes`,
           { credentials: "include" },
         );
 

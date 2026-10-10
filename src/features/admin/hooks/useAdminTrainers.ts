@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback } from "react";
 import type { AdminTrainer } from "@/features/admin/types";
 
@@ -26,10 +27,10 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
       // Same split as members: User (role/email/createdAt) lives in one
       // collection, avatar/specialty/experience live on TrainerProfile.
       const [usersRes, profilesRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        fetch(`${getApiUrl()}/users`, {
           credentials: "include",
         }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers`, {
+        fetch(`${getApiUrl()}/trainers`, {
           credentials: "include",
         }),
       ]);
@@ -116,7 +117,7 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
     setActionLoadingId(id);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+        `${getApiUrl()}/users/${id}`,
         {
           method: "DELETE",
           credentials: "include",

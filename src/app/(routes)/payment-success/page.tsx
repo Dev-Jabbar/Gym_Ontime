@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { TbCircleCheck, TbCircleX, TbLoader2 } from "react-icons/tb";
@@ -22,7 +23,7 @@ export default function PaymentSuccessPage() {
     }
 
     fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/payments/verify?reference=${reference}`,
+      `${getApiUrl()}/payments/verify?reference=${reference}`,
       {
         credentials: "include",
       },

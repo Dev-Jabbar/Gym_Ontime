@@ -1,11 +1,22 @@
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 import type { Class, FilterStatus } from "../types";
+import { useLiveCapacity } from "./useLiveCapacity";
 
 export function useSchedule(selectedDate: Date | null) {
   // ✅ nullable
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // NestJS only: the server pushes new seat counts, so the numbers on the
+  // cards change without a refresh. No-op when Express is selected.
+  useLiveCapacity(
+    ({ classId, enrolled, capacity }) =>
+      setClasses((prev) =>
+        prev.map((c) => (c.id === classId ? { ...c, enrolled, capacity } : c)),
+      ),
+    (classId) => setClasses((prev) => prev.filter((c) => c.id !== classId)),
+  );
 
   useEffect(() => {
     fetchClasses();
@@ -18,7 +29,7 @@ export function useSchedule(selectedDate: Date | null) {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/classes`,
+        `${getApiUrl()}/classes`,
         {
           credentials: "include",
         },

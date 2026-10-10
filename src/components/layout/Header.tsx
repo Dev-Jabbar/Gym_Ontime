@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -38,7 +39,7 @@ export default function Header({
   const clearUser = useUserStore((state) => state.clearUser);
 
   const handleLogout = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, {
+    await fetch(`${getApiUrl()}/users/logout`, {
       method: "POST",
       credentials: "include", // 👈 required for cookie to be cleared
     });

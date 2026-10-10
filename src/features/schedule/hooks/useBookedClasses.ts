@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 
 /**
@@ -32,7 +33,7 @@ export function useBookedClasses(userRole: string) {
     const fetchBookedClasses = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/payments/my-payments`,
+          `${getApiUrl()}/payments/my-payments`,
           { credentials: "include" },
         );
 

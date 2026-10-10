@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback } from "react";
 import type { AdminUser } from "@/features/admin/types";
 
@@ -29,10 +30,10 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
       // avatar only exists on MemberProfile, not on User — so fetch
       // both in parallel and merge them client-side.
       const [usersRes, profilesRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        fetch(`${getApiUrl()}/users`, {
           credentials: "include",
         }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/members`, {
+        fetch(`${getApiUrl()}/members`, {
           credentials: "include",
         }),
       ]);
@@ -128,7 +129,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
       setActionLoadingId(id);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}/upgrade-to-trainer`,
+          `${getApiUrl()}/users/${id}/upgrade-to-trainer`,
           {
             method: "POST",
             credentials: "include",
@@ -153,7 +154,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
     setActionLoadingId(id);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+        `${getApiUrl()}/users/${id}`,
         {
           method: "DELETE",
           credentials: "include",

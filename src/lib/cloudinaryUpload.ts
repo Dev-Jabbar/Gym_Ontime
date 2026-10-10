@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/backend";
 /**
  * Uploads a file directly to Cloudinary using the signed-upload flow:
  * 1. Ask our backend for a signature (proves the request is authorized
@@ -13,7 +14,7 @@
 export async function uploadToCloudinary(file: File): Promise<string> {
   // Step 1: get a signature scoped to this upload attempt.
   const signatureRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/uploads/signature`,
+    `${getApiUrl()}/uploads/signature`,
     {
       method: "POST",
       credentials: "include",

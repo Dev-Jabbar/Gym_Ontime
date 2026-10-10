@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
@@ -38,7 +39,7 @@ export function ClassDetailsModal({
     const fetchMembers = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/classes/${classData.id}/members`,
+          `${getApiUrl()}/classes/${classData.id}/members`,
           { credentials: "include" },
         );
         if (!res.ok) throw new Error("Failed to fetch members");

@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/backend";
 import { create } from "zustand";
 
 export interface User {
@@ -38,7 +39,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     set({ hasFetched: true });
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+      const res = await fetch(`${getApiUrl()}/users/me`, {
         credentials: "include",
       });
 

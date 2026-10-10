@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback } from "react";
 import { ProfileData, UpdateProfileData } from "@/features/profile/types";
 import { useUser } from "@/hooks/useUser";
@@ -31,14 +32,14 @@ export const useProfile = (): UseProfileReturn => {
       let profileRes;
       if (user.role === "member") {
         profileRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/members/me`,
+          `${getApiUrl()}/members/me`,
           {
             credentials: "include",
           },
         );
       } else if (user.role === "trainer") {
         profileRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/trainers/me`,
+          `${getApiUrl()}/trainers/me`,
           {
             credentials: "include",
           },
@@ -48,7 +49,7 @@ export const useProfile = (): UseProfileReturn => {
         // profile: null unconditionally and had no way to see or
         // update their own avatar.
         profileRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/admins/me`,
+          `${getApiUrl()}/admins/me`,
           {
             credentials: "include",
           },
@@ -93,7 +94,7 @@ export const useProfile = (): UseProfileReturn => {
     try {
       // Update name via user endpoint
       if (data.name) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+        await fetch(`${getApiUrl()}/users/${user.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -103,7 +104,7 @@ export const useProfile = (): UseProfileReturn => {
 
       // Update member profile
       if (user.role === "member") {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/members/me`, {
+        await fetch(`${getApiUrl()}/members/me`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -129,7 +130,7 @@ export const useProfile = (): UseProfileReturn => {
 
       // Update trainer profile
       if (user.role === "trainer") {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers/me`, {
+        await fetch(`${getApiUrl()}/trainers/me`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -159,7 +160,7 @@ export const useProfile = (): UseProfileReturn => {
       // AdminProfile only has `avatar`, so this is intentionally the
       // smallest of the three branches.
       if (user.role === "admin") {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admins/me`, {
+        await fetch(`${getApiUrl()}/admins/me`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

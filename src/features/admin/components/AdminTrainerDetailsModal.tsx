@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 import {
   TbX,
@@ -40,7 +41,7 @@ export function AdminTrainerDetailsModal({
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classes`, {
+        const res = await fetch(`${getApiUrl()}/classes`, {
           credentials: "include",
         });
 

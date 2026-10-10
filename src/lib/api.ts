@@ -1,9 +1,21 @@
 // src/lib/api.ts
+//
+// ⚠️ LEGACY / NOT CURRENTLY USED IN PRODUCTION
+// This client authenticates via a Bearer token pulled from localStorage.
+// The live app now authenticates via an HTTP-only cookie set by the
+// backend on login (see the auth middleware on the backend, and
+// `useUserStore` for how the current user is actually tracked on the
+// frontend). Kept around from an earlier auth approach; not wired into
+// any active page. Safe to delete once confirmed unused everywhere,
+// but left in place for now rather than removed mid-way through other
+// work.
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 /**
- * Get JWT token from localStorage (browser only)
+ * Reads the JWT from localStorage. Guarded for SSR — `localStorage`
+ * doesn't exist during Next.js server-side rendering, only once the
+ * component has mounted in the browser.
  */
 const getToken = (): string | null => {
   if (typeof window !== "undefined") {
@@ -13,9 +25,13 @@ const getToken = (): string | null => {
 };
 
 /**
- * Generic API request handler
- * - attaches token automatically
- * - throws UNAUTHORIZED instead of redirecting
+ * Shared request wrapper for this (unused) API client: attaches the
+ * bearer token if one exists, and normalizes error handling so callers
+ * don't each need their own try/catch + response.ok check.
+ *
+ * Deliberately throws on a 401 rather than redirecting from here —
+ * this module doesn't know what page it's being called from, so
+ * navigation decisions are left to whatever calls it.
  */
 async function apiRequest(
   endpoint: string,
@@ -27,14 +43,14 @@ async function apiRequest(
     "Content-Type": "application/json",
   };
 
-  // Merge headers
+  // Merge in any caller-supplied headers before adding auth, so a
+  // caller can't accidentally clobber the Authorization header below.
   if (options.headers) {
     Object.entries(options.headers).forEach(([key, value]) => {
       headers[key] = value as string;
     });
   }
 
-  // Attach token
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -47,7 +63,9 @@ async function apiRequest(
   try {
     const response = await fetch(`${API_URL}${endpoint}`, config);
 
-    // 🚨 IMPORTANT: only THROW error
+    // Session has expired or was revoked — clear the stale local
+    // credentials so a later request doesn't keep sending a dead
+    // token, then let the caller decide what to do next.
     if (response.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("gym_token");
@@ -67,6 +85,10 @@ async function apiRequest(
 
     return data;
   } catch (error) {
+    // Re-throw anything we already understand (including the
+    // UNAUTHORIZED case above); anything else is assumed to be a
+    // network failure (fetch itself throwing, e.g. offline/DNS/CORS)
+    // rather than an API error, so it gets a friendlier message.
     if (error instanceof Error) throw error;
 
     throw new Error(
@@ -76,7 +98,9 @@ async function apiRequest(
 }
 
 /**
- * API FUNCTIONS
+ * Thin, typed wrappers around each endpoint this client knows about.
+ * Kept intentionally simple — no caching, no retries — since this
+ * whole module is legacy (see the note at the top of the file).
  */
 export const api = {
   register: (userData: {

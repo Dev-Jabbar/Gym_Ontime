@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 import { SchedulePage } from "@/features/schedule";
 import { useUser } from "@/hooks/useUser";
@@ -12,7 +13,7 @@ export default function Page() {
 
   useEffect(() => {
     if (user?.role === "trainer") {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainers/me`, {
+      fetch(`${getApiUrl()}/trainers/me`, {
         credentials: "include",
       })
         .then((res) => {

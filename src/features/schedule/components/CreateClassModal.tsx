@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { TbX, TbPlus, TbPhoto } from "react-icons/tb";
@@ -99,7 +100,7 @@ export function CreateClassModal({
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        const res = await fetch(`${getApiUrl()}/users`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch trainers");
@@ -199,7 +200,7 @@ export function CreateClassModal({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/classes`,
+        `${getApiUrl()}/classes`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

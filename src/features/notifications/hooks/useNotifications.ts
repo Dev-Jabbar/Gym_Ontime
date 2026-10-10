@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Notification } from "../types";
 
@@ -18,7 +19,7 @@ export function useNotifications() {
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/notifications/my-notifications`,
+        `${getApiUrl()}/notifications/my-notifications`,
         { credentials: "include" },
       );
 
@@ -61,7 +62,7 @@ export function useNotifications() {
 
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/notifications/${notificationId}/read`,
+        `${getApiUrl()}/notifications/${notificationId}/read`,
         { method: "PUT", credentials: "include" },
       );
     } catch (err) {
@@ -75,7 +76,7 @@ export function useNotifications() {
 
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/notifications/mark-all-read`,
+        `${getApiUrl()}/notifications/mark-all-read`,
         { method: "PUT", credentials: "include" },
       );
     } catch (err) {

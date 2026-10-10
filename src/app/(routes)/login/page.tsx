@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
@@ -47,7 +48,7 @@ export default function LoginPage() {
     setErrorMessage(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
+        `${getApiUrl()}/users/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

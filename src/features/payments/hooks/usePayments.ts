@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Payment,
@@ -25,6 +26,13 @@ interface UsePaymentsReturn {
   };
 }
 
+/**
+ * Loads the admin payments table: the raw list, a derived filtered/
+ * searched view, and a small set of summary stats — all computed on
+ * the client from the same fetched list rather than as separate
+ * requests, since the dataset here is small enough that refetching
+ * per-stat isn't worth the extra round trips.
+ */
 export const usePayments = (): UsePaymentsReturn => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,11 +40,14 @@ export const usePayments = (): UsePaymentsReturn => {
   const [filterStatus, setFilterStatus] = useState<PaymentFilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // useCallback so this can safely be both the effect's dependency and
+  // the `refetch` value handed back to consumers, without re-creating
+  // (and re-running the effect) on every render.
   const fetchPayments = useCallback(() => {
     setLoading(true);
     setError(null);
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments`, {
+    fetch(`${getApiUrl()}/payments`, {
       credentials: "include",
     })
       .then((res) => {
@@ -47,6 +58,9 @@ export const usePayments = (): UsePaymentsReturn => {
         setPayments(data.data ?? []);
       })
       .catch(() => {
+        // Swallow the real error and show a generic message — nothing
+        // actionable for the admin viewing this table beyond "try
+        // again", so no value in surfacing the raw fetch error.
         setError("Unable to load payments. Please try again.");
       })
       .finally(() => {
@@ -58,6 +72,9 @@ export const usePayments = (): UsePaymentsReturn => {
     fetchPayments();
   }, [fetchPayments]);
 
+  // Filter status and search apply on top of each other (AND, not OR):
+  // e.g. filterStatus="completed" + searchQuery="jane" narrows to
+  // completed payments matching "jane", not either condition alone.
   const filteredPayments = useMemo(() => {
     let filtered = payments;
 
@@ -82,6 +99,12 @@ export const usePayments = (): UsePaymentsReturn => {
       .filter((p) => p.status === "completed")
       .reduce((sum, p) => sum + p.amount, 0);
 
+    // NOTE: this is a calendar-month window (resets on the 1st), which
+    // is a different convention from the dashboard's "rolling last 30
+    // days" revenue stat (see features/dashboard/hooks/useDashboard.ts).
+    // Not a bug exactly — just worth knowing the two numbers answer
+    // slightly different questions and won't always match if compared
+    // side by side near a month boundary.
     const monthRevenue = payments
       .filter((p) => {
         const date = new Date(p.createdAt);

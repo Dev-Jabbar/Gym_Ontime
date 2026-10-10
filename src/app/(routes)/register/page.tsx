@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import { DevTool } from "@hookform/devtools";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -69,7 +70,7 @@ export default function RegisterPage() {
       setLoading(true);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/register`,
+        `${getApiUrl()}/users/register`,
         {
           method: "POST",
           headers: {

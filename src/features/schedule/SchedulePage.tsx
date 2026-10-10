@@ -1,5 +1,6 @@
 "use client";
 
+import { getApiUrl } from "@/lib/backend";
 import React, { useState, useEffect } from "react";
 import { TbPlus } from "react-icons/tb";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -108,7 +109,7 @@ export function SchedulePage({
     if (!cancellingClassId) return;
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/classes/${cancellingClassId}`,
+        `${getApiUrl()}/classes/${cancellingClassId}`,
         {
           method: "DELETE",
           credentials: "include",

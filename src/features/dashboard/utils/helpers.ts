@@ -18,6 +18,10 @@ export const calculateCapacityPercentage = (
   return (enrolled / capacity) * 100;
 };
 
+// Assumes revenue is always in the millions — a smaller figure (e.g.
+// ₦50,000) would render as "₦0.1M" rather than switching to a more
+// readable unit. Fine for a gym's realistic revenue range, but worth
+// knowing if this is ever reused somewhere revenue could be small.
 export const formatRevenue = (revenue: number): string => {
   return `₦${(revenue / 1000000).toFixed(1)}M`;
 };
