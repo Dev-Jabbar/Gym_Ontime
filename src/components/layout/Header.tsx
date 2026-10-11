@@ -1,6 +1,7 @@
 "use client";
 
 import { getApiUrl } from "@/lib/backend";
+import { disablePush } from "@/lib/pushNotifications";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -39,6 +40,8 @@ export default function Header({
   const clearUser = useUserStore((state) => state.clearUser);
 
   const handleLogout = async () => {
+    // Needs the session cookie, so it must run before the logout request.
+    await disablePush();
     await fetch(`${getApiUrl()}/users/logout`, {
       method: "POST",
       credentials: "include", // 👈 required for cookie to be cleared

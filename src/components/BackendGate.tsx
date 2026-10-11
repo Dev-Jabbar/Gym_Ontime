@@ -9,6 +9,7 @@ import {
   setBackend,
   type BackendId,
 } from "@/lib/backend";
+import { disablePush } from "@/lib/pushNotifications";
 
 type Status = "checking" | "online" | "offline";
 
@@ -98,6 +99,7 @@ function SwitchBadge({ current }: { current: BackendId }) {
     // Both backends store the session in a cookie named "token" on
     // localhost, so log out of the current one before leaving it.
     try {
+      await disablePush();
       await fetch(`${getApiUrl()}/users/logout`, {
         method: "POST",
         credentials: "include",

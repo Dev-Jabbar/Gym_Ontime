@@ -6,6 +6,7 @@ import { useUser } from "@/hooks/useUser";
 import { useUserStore } from "@/store/useUserStore";
 import { getAvatarFallback } from "@/lib/getAvatarFallback";
 import Header from "./Header";
+import { PushPrompt } from "@/components/PushPrompt";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -43,6 +44,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         />
       </div>
       {children}
+      <PushPrompt />
     </>
   );
 }

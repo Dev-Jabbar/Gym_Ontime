@@ -45,9 +45,13 @@ export function useNotifications() {
 
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
 
+    // A push arrived while the tab is open (see lib/pushNotifications.ts).
+    window.addEventListener("gym:push", fetchNotifications);
+
     return () => {
       isMounted.current = false;
       clearInterval(interval);
+      window.removeEventListener("gym:push", fetchNotifications);
     };
   }, [fetchNotifications]);
 
