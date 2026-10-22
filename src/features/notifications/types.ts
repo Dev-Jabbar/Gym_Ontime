@@ -5,7 +5,8 @@ export type NotificationType =
   | "trainer_assigned";
 
 export interface Notification {
-  _id: string;
+  _id?: string;
+  id?: string;
   type: NotificationType;
   title: string;
   message: string;

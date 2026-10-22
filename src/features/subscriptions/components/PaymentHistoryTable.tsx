@@ -1,3 +1,4 @@
+import { idOf } from "@/lib/ids";
 import { Payment } from "@/features/subscriptions/types";
 
 interface PaymentHistoryTableProps {
@@ -33,7 +34,7 @@ export function PaymentHistoryTable({ payments }: PaymentHistoryTableProps) {
         </thead>
         <tbody className="divide-y divide-gray-100">
           {payments.map((payment) => (
-            <tr key={payment._id}>
+            <tr key={idOf(payment)}>
               <td className="px-4 py-3 font-medium text-gray-900">
                 {payment.class?.name ?? "—"}
               </td>

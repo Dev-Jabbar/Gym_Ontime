@@ -44,7 +44,9 @@ export interface Class {
 }
 
 export interface ClassMember {
-  _id: string;
+  // Express (MongoDB) sends `_id`; the Nest (Postgres) API sends `id`.
+  _id?: string;
+  id?: string;
   avatar?: string | null;
   phone?: string;
   gender?: string;

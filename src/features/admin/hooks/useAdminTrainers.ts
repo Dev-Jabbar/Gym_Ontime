@@ -56,7 +56,7 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
             const userId =
               typeof profile.userId === "string"
                 ? profile.userId
-                : profile.userId?._id;
+                : (profile.userId?._id ?? profile.userId?.id);
 
             if (userId) {
               acc[userId] = {
@@ -82,9 +82,12 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
       const onlyTrainers = users
         .filter((u) => u.role === "trainer" && u.isActive !== false)
         .map((u) => {
-          const profile = profileByUserId[u._id] ?? {};
+          // Express sends `_id`, the Nest API sends `id`.
+          const userKey: string = u._id ?? (u as { id?: string }).id ?? "";
+          const profile = profileByUserId[userKey] ?? {};
           return {
             ...u,
+            _id: userKey,
             avatar: profile.avatar ?? u.avatar ?? null,
             specialty: profile.specialty ?? null,
             experience: profile.experience ?? null,

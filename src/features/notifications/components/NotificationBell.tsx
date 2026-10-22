@@ -1,5 +1,6 @@
 "use client";
 
+import { idOf } from "@/lib/ids";
 import { useState, useRef, useEffect } from "react";
 import {
   TbBell,
@@ -54,7 +55,7 @@ export function NotificationBell() {
   }, []);
 
   const handleNotificationClick = (notification: Notification) => {
-    if (!notification.read) markAsRead(notification._id);
+    if (!notification.read) markAsRead(idOf(notification));
   };
 
   return (
@@ -100,7 +101,7 @@ export function NotificationBell() {
             ) : (
               notifications.map((notification) => (
                 <button
-                  key={notification._id}
+                  key={idOf(notification)}
                   onClick={() => handleNotificationClick(notification)}
                   className={`w-full text-left flex gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors ${
                     !notification.read ? "bg-orange-50/50" : ""

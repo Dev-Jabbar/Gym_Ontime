@@ -1,3 +1,4 @@
+import { idOf } from "@/lib/ids";
 import { Payment, PaymentFilterStatus } from "@/features/payments/types";
 import { TbSearch } from "react-icons/tb";
 
@@ -71,7 +72,7 @@ export function PaymentsTable({
             </thead>
             <tbody className="divide-y divide-gray-100">
               {payments.map((payment) => (
-                <tr key={payment._id} className="hover:bg-gray-50">
+                <tr key={idOf(payment)} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <p className="font-medium text-gray-900">
                       {payment.user?.name ?? "—"}

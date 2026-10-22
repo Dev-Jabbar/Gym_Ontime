@@ -20,7 +20,7 @@ export default function Page() {
           if (!res.ok) throw new Error("Failed to fetch trainer profile");
           return res.json();
         })
-        .then((data) => setTrainerProfileId(data._id))
+        .then((data) => setTrainerProfileId(data._id ?? data.id))
         .catch(console.error);
     }
   }, [user]);

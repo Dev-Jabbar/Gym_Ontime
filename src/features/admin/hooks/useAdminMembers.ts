@@ -63,7 +63,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
             const userId =
               typeof profile.userId === "string"
                 ? profile.userId
-                : profile.userId?._id;
+                : (profile.userId?._id ?? profile.userId?.id);
 
             if (userId) {
               acc[userId] = {
@@ -77,7 +77,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
                 // to fetch "classes joined" via
                 // GET /classes/by-member/:memberProfileId, since Class
                 // .members references MemberProfile, not User.
-                memberProfileId: profile._id ?? null,
+                memberProfileId: profile._id ?? profile.id ?? null,
               };
             }
             return acc;
@@ -95,9 +95,12 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
       const onlyMembers = users
         .filter((u) => u.role === "member" && u.isActive !== false)
         .map((u) => {
-          const profile = profileByUserId[u._id] ?? {};
+          // Express sends `_id`, the Nest API sends `id`.
+          const userKey: string = u._id ?? (u as { id?: string }).id ?? "";
+          const profile = profileByUserId[userKey] ?? {};
           return {
             ...u,
+            _id: userKey,
             avatar: profile.avatar ?? u.avatar ?? null,
             phone: profile.phone ?? null,
             gender: profile.gender ?? null,

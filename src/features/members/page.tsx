@@ -105,7 +105,7 @@ export function MembersPage({ userRole, classId }: MembersPageProps) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {cls.members.map((member: any) => (
-                      <MemberCard key={member._id} member={member} />
+                      <MemberCard key={member._id ?? member.id} member={member} />
                     ))}
                   </div>
                 )}

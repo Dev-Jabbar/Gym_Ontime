@@ -197,7 +197,8 @@ export function ClassDetailsModal({
             ) : (
               <div className="space-y-2">
                 {members.map((member) => {
-                  const isExpanded = expandedMemberId === member._id;
+                  const memberId = member._id ?? member.id ?? "";
+                  const isExpanded = expandedMemberId === memberId;
                   const hasMemberDetails =
                     member.phone || member.gender || member.fitnessGoal;
                   const avatar =
@@ -205,11 +206,11 @@ export function ClassDetailsModal({
                     getAvatarFallback(member.userId?.name ?? "Member");
 
                   return (
-                    <div key={member._id}>
+                    <div key={memberId}>
                       <button
                         type="button"
                         onClick={() =>
-                          setExpandedMemberId(isExpanded ? null : member._id)
+                          setExpandedMemberId(isExpanded ? null : memberId)
                         }
                         disabled={!hasMemberDetails}
                         className="w-full flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-left disabled:hover:bg-gray-50 disabled:cursor-default"

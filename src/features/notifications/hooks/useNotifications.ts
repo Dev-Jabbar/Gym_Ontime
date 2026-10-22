@@ -1,5 +1,6 @@
 "use client";
 
+import { idOf } from "@/lib/ids";
 import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Notification } from "../types";
@@ -45,13 +46,9 @@ export function useNotifications() {
 
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
 
-    // A push arrived while the tab is open (see lib/pushNotifications.ts).
-    window.addEventListener("gym:push", fetchNotifications);
-
     return () => {
       isMounted.current = false;
       clearInterval(interval);
-      window.removeEventListener("gym:push", fetchNotifications);
     };
   }, [fetchNotifications]);
 
@@ -60,7 +57,7 @@ export function useNotifications() {
     // enough that a failure is very unlikely to matter visually (worst
     // case, next poll corrects it back).
     setNotifications((prev) =>
-      prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n)),
+      prev.map((n) => (idOf(n) === notificationId ? { ...n, read: true } : n)),
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
 

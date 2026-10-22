@@ -1,5 +1,6 @@
 "use client";
 
+import { idOf } from "@/lib/ids";
 import { getApiUrl } from "@/lib/backend";
 import { useState, useEffect } from "react";
 
@@ -51,7 +52,7 @@ export function useBookedClasses(userRole: string) {
           const classId =
             typeof payment.class === "string"
               ? payment.class
-              : payment.class._id;
+              : idOf(payment.class);
 
           if (payment.paymentType === "one-time") {
             // Permanent — a paid one-off session doesn't expire.

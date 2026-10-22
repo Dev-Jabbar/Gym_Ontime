@@ -110,7 +110,7 @@ export function EditClassModal({
 
         const trainerUsers = users
           .filter((u) => u.role === "trainer" && u.isActive !== false)
-          .map((u) => ({ _id: u._id, name: u.name }));
+          .map((u) => ({ _id: u._id ?? u.id, name: u.name }));
 
         setTrainers(trainerUsers);
       } catch (err) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { idOf } from "@/lib/ids";
 import { useSubscriptions } from "@/features/subscriptions/hooks/useSubscriptions";
 import { SubscriptionCard } from "@/features/subscriptions/components/SubscriptionCard";
 import { PaymentHistoryTable } from "@/features/subscriptions/components/PaymentHistoryTable";
@@ -61,7 +62,7 @@ export function SubscriptionsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activeSubscriptions.map((payment) => (
-                <SubscriptionCard key={payment._id} payment={payment} />
+                <SubscriptionCard key={idOf(payment)} payment={payment} />
               ))}
             </div>
           )}

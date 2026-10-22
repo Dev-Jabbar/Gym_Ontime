@@ -8,19 +8,22 @@ export type SubscriptionInterval =
   | "yearly";
 
 export interface PopulatedUser {
-  _id: string;
+  _id?: string;
+  id?: string;
   name: string;
   email: string;
 }
 
 export interface PopulatedClass {
-  _id: string;
+  _id?: string;
+  id?: string;
   name: string;
   price?: number;
 }
 
 export interface Payment {
-  _id: string;
+  _id?: string;
+  id?: string;
   user: PopulatedUser;
   class?: PopulatedClass;
   amount: number;

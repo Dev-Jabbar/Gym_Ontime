@@ -9,14 +9,16 @@ export type SubscriptionInterval =
 export type SubscriptionStatus = "active" | "expired" | "cancelled";
 
 export interface PopulatedClass {
-  _id: string;
+  _id?: string;
+  id?: string;
   name: string;
   price?: number;
   schedule?: string;
 }
 
 export interface PopulatedSubscription {
-  _id: string;
+  _id?: string;
+  id?: string;
   status: SubscriptionStatus;
   startDate: string;
   endDate: string;
@@ -24,7 +26,8 @@ export interface PopulatedSubscription {
 }
 
 export interface Payment {
-  _id: string;
+  _id?: string;
+  id?: string;
   amount: number;
   currency: string;
   status: PaymentStatus;
