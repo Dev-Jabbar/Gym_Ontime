@@ -11,7 +11,13 @@ import {
 } from "@/lib/backend";
 import { disablePush } from "@/lib/pushNotifications";
 
-type Status = "checking" | "online" | "offline";
+// "waking" = no answer after a few seconds. A free-tier host (Render) sleeps
+// when idle and can take up to a minute to start, so we keep waiting and say
+// so, instead of showing a red "offline" straight away.
+type Status = "checking" | "waking" | "online" | "offline";
+
+const SLOW_AFTER_MS = 3000;
+const GIVE_UP_AFTER_MS = 75000;
 
 const DETAILS: Record<BackendId, { stack: string }> = {
   express: { stack: "Express + MongoDB" },
@@ -22,17 +28,36 @@ function useBackendStatus(id: BackendId): Status {
   const [status, setStatus] = useState<Status>("checking");
 
   useEffect(() => {
+    // `active` stops a cancelled run (React dev mode runs effects twice, and
+    // an id change cancels the old ping) from writing its aborted result
+    // into the state of the run that replaced it.
+    let active = true;
+    setStatus("checking");
+
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
+    const giveUp = setTimeout(() => controller.abort(), GIVE_UP_AFTER_MS);
+    // Only flips to "waking" if the ping is still unanswered.
+    const slow = setTimeout(() => {
+      if (active) setStatus((s) => (s === "checking" ? "waking" : s));
+    }, SLOW_AFTER_MS);
 
     // GET /classes is public on both backends, so it works as a ping.
     fetch(`${BACKENDS[id].url}/classes`, { signal: controller.signal })
-      .then((res) => setStatus(res.ok ? "online" : "offline"))
-      .catch(() => setStatus("offline"))
-      .finally(() => clearTimeout(timer));
+      .then((res) => {
+        if (active) setStatus(res.ok ? "online" : "offline");
+      })
+      .catch(() => {
+        if (active) setStatus("offline");
+      })
+      .finally(() => {
+        clearTimeout(giveUp);
+        clearTimeout(slow);
+      });
 
     return () => {
-      clearTimeout(timer);
+      active = false;
+      clearTimeout(giveUp);
+      clearTimeout(slow);
       controller.abort();
     };
   }, [id]);
@@ -53,7 +78,9 @@ function BackendCard({
       ? "bg-green-500"
       : status === "offline"
         ? "bg-red-500"
-        : "bg-gray-400 animate-pulse";
+        : status === "waking"
+          ? "bg-amber-500 animate-pulse"
+          : "bg-gray-400 animate-pulse";
 
   return (
     <button
@@ -65,10 +92,16 @@ function BackendCard({
         <span className="text-lg font-semibold">{BACKENDS[id].label}</span>
         <span className="flex items-center gap-2 text-xs text-gray-600">
           <span className={`h-2.5 w-2.5 rounded-full ${dot}`} />
-          {status === "checking" ? "checking" : status}
+          {status === "waking" ? "waking up" : status}
         </span>
       </div>
       <p className="mt-2 text-sm text-gray-600">{DETAILS[id].stack}</p>
+      {status === "waking" && (
+        <p className="mt-2 text-xs text-amber-600">
+          This server sleeps when idle and may take up to a minute to wake.
+          Wait for the green dot, then pick it.
+        </p>
+      )}
       <p className="mt-3 break-all text-xs text-gray-400">{BACKENDS[id].url}</p>
     </button>
   );
