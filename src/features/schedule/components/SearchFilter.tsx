@@ -11,7 +11,6 @@ export function SearchFilter({
 }: SearchFilterProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      {/* Search */}
       <div className="relative">
         <TbSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
@@ -23,7 +22,6 @@ export function SearchFilter({
         />
       </div>
 
-      {/* Status Filter */}
       <select
         value={filterStatus}
         onChange={(e) => onFilterChange(e.target.value as any)}
@@ -33,8 +31,7 @@ export function SearchFilter({
         <option value="upcoming">Upcoming</option>
         <option value="ongoing">Ongoing</option>
         <option value="completed">Completed</option>
-        {/* Only members can "book" a class, so only they get this
-            filter option — admins/trainers have no concept of it. */}
+        {/* Only members can book a class, so only they get this filter option. */}
         {userRole === "member" && <option value="booked">Booked</option>}
       </select>
     </div>

@@ -4,7 +4,7 @@ import type { Class, FilterStatus } from "../types";
 import { useLiveCapacity } from "./useLiveCapacity";
 
 export function useSchedule(selectedDate: Date | null) {
-  // ✅ nullable
+  // nullable
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,13 +39,12 @@ export function useSchedule(selectedDate: Date | null) {
 
       const data: Class[] = await response.json();
 
-      // ✅ If no date selected, show all classes
+      // If no date selected, show all classes
       if (!selectedDate) {
         setClasses(data);
         return;
       }
 
-      // ✅ Filter by selected date
       const filtered = data.filter((cls) => {
         const classDate = new Date(cls.schedule).toLocaleDateString("en-NG", {
           timeZone: "Africa/Lagos",
@@ -68,10 +67,9 @@ export function useSchedule(selectedDate: Date | null) {
   return { classes, loading, error, refetch: fetchClasses };
 }
 
-// Ongoing first (what's happening right now matters most), then
-// Upcoming, then Completed/Canceled last — same priority order
-// already used for the Dashboard's "Recent & Upcoming" list, just
-// applied here too for consistency across the app.
+// Ongoing first (what is happening now matters most), then Upcoming, then
+// Completed and Canceled. The same priority order as the dashboard's
+// "Recent & Upcoming" list.
 const STATUS_PRIORITY: Record<string, number> = {
   ongoing: 0,
   upcoming: 1,
@@ -96,9 +94,8 @@ export function useClassFilters(
     let filtered = classes;
 
     if (filterStatus === "booked") {
-      // Not a real class status — "booked" means "this classId is in
-      // the member's own bookedClassIds set", regardless of whether
-      // the class itself is currently upcoming/ongoing/completed.
+      // "booked" is not a real class status: it means the classId is in the
+      // member's own bookedClassIds set, whatever the class's status is.
       filtered = filtered.filter((cls) => bookedClassIds.has(cls.id));
     } else if (filterStatus !== "all") {
       filtered = filtered.filter((cls) => cls.status === filterStatus);
@@ -112,9 +109,8 @@ export function useClassFilters(
       );
     }
 
-    // Sort by status priority first, then chronologically within each
-    // group (soonest/most-relevant first) so it's not just grouped but
-    // sensibly ordered inside each group too.
+    // Sort by status priority first, then chronologically within each group,
+    // so each group is also sensibly ordered inside.
     const sorted = [...filtered].sort((a, b) => {
       const priorityDiff =
         (STATUS_PRIORITY[a.status] ?? 99) - (STATUS_PRIORITY[b.status] ?? 99);

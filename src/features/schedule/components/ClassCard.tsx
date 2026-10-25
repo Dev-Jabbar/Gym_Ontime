@@ -20,8 +20,8 @@ export function ClassCard({
   const capacityPercentage = (classData.enrolled / classData.capacity) * 100;
   const router = useRouter();
 
-  // Only classes with an image get the expand/collapse behavior — no
-  // image means the card behaves exactly as it always did.
+  // Only classes with an image expand and collapse; without an image the
+  // card keeps its original layout.
   const [expanded, setExpanded] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -34,8 +34,8 @@ export function ClassCard({
     if (classData.image) setExpanded((prev) => !prev);
   };
 
-  // Buttons need to keep working normally without also toggling the
-  // card — each one stops its click from bubbling up to the card.
+  // The buttons must keep working without also toggling the card, so each
+  // one stops its click from bubbling up to the card.
   const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   const statusBadge = (
@@ -68,9 +68,9 @@ export function ClassCard({
       }`}
     >
       {classData.image ? (
-        /* Image + badges overlaid on top of it. Height animates between
-           a small "peek" strip (collapsed) and a full banner (expanded)
-           — pure CSS transition, no layout measuring needed. */
+        /* Image with badges overlaid. The height animates between a small
+           "peek" strip (collapsed) and a full banner (expanded) using a plain
+           CSS transition. */
         <div
           className={`relative w-full transition-all duration-300 ease-in-out ${
             expanded ? "h-32" : "h-8"
@@ -91,7 +91,7 @@ export function ClassCard({
           )}
         </div>
       ) : (
-        /* No image — original layout, completely unchanged. */
+        /* No image: the original layout. */
         <div className="p-4 pb-0 flex justify-between items-start">
           <div className="flex items-center gap-2">
             {statusBadge}
@@ -102,18 +102,14 @@ export function ClassCard({
       )}
 
       <div className="p-6 pt-3">
-        {/* Class Name */}
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           {classData.name}
         </h3>
         <p className="text-sm text-gray-600 mb-4">{classData.description}</p>
 
-        {/* Schedule — shows a specific date for one-off classes, or
-            the recurrence pattern ("Every Mon, Wed, Fri") for recurring
-            ones, since a calendar date is misleading for something
-            that happens indefinitely. Replaces the old hardcoded date
-            display plus the separate blue "Every Mon, Wed..." line
-            below it, which duplicated this same information. */}
+        {/* Schedule: a specific date for one-off classes, or the recurrence
+            pattern ("Every Mon, Wed, Fri") for recurring ones, since a calendar
+            date is misleading for something that happens indefinitely. */}
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
           <div className="flex items-center gap-1">
             <TbClock className="w-4 h-4" />
@@ -123,8 +119,8 @@ export function ClassCard({
           <span>{classData.duration}</span>
         </div>
 
-        {/* Trainer — click to see class details, trainer bio, and
-            enrolled members */}
+        {/* Trainer: opens the class details, trainer bio and enrolled
+            members */}
         <button
           type="button"
           onClick={(e) => {
@@ -150,7 +146,6 @@ export function ClassCard({
           </div>
         </button>
 
-        {/* Capacity */}
         <div className="mb-4">
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-gray-600">Capacity</span>
@@ -168,7 +163,7 @@ export function ClassCard({
           </div>
         </div>
 
-        {/* ✅ Pricing — hidden for trainer */}
+        {/* Pricing: hidden for trainers */}
         {userRole !== "trainer" && classData.pricing.oneTime && (
           <div className="mb-4">
             <p className="text-xs text-gray-500 mb-1">From</p>
@@ -181,7 +176,6 @@ export function ClassCard({
           </div>
         )}
 
-        {/* Action Buttons */}
         {userRole === "member" && (
           <>
             {isBooked ? (

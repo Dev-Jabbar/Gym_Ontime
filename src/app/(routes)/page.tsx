@@ -25,12 +25,6 @@ const Home = (props: Props) => {
         <BookSession />
         <Footer />
 
-        {/**  <div className="md:px-16 px-4">
-         
-        </div>
-
-       
-        */}
       </div>
     </>
   );

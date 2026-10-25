@@ -24,8 +24,8 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
     setError(null);
 
     try {
-      // Same split as members: User (role/email/createdAt) lives in one
-      // collection, avatar/specialty/experience live on TrainerProfile.
+      // Same split as members: User (role, email, createdAt) is one resource,
+      // while avatar, specialty and experience live on TrainerProfile.
       const [usersRes, profilesRes] = await Promise.all([
         fetch(`${getApiUrl()}/users`, {
           credentials: "include",
@@ -42,8 +42,8 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
         ? usersData
         : (usersData.data ?? []);
 
-      // Profile extras are best-effort — a failed fetch here shouldn't
-      // block the trainer list from rendering.
+      // Profile extras are best effort: a failed fetch must not block the
+      // trainer list from rendering.
       let profileByUserId: Record<string, any> = {};
       if (profilesRes.ok) {
         const profilesData = await profilesRes.json();
@@ -75,10 +75,10 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
         );
       }
 
-      // role === "trainer" excludes members/admins.
-      // isActive !== false excludes soft-deleted trainers — deleteUser()
-      // only flips isActive on the user, so without this filter a
-      // "deleted" trainer would keep reappearing after refetch.
+      // role === "trainer" excludes members and admins. isActive !== false
+      // excludes soft-deleted trainers: deleting a user only sets isActive to
+      // false, so without this filter a deleted trainer would reappear after
+      // a refetch.
       const onlyTrainers = users
         .filter((u) => u.role === "trainer" && u.isActive !== false)
         .map((u) => {
@@ -114,8 +114,8 @@ export const useAdminTrainers = (): UseAdminTrainersReturn => {
     fetchTrainers();
   }, [fetchTrainers]);
 
-  // No upgradeToTrainer here on purpose — trainers can't be "upgraded"
-  // further, and downgrading trainer -> member isn't part of this scope.
+  // There is no upgradeToTrainer here on purpose: trainers cannot be upgraded
+  // further, and downgrading a trainer to a member is out of scope.
   const deleteTrainer = useCallback(async (id: string): Promise<boolean> => {
     setActionLoadingId(id);
     try {

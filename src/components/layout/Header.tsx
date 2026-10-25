@@ -44,7 +44,7 @@ export default function Header({
     await disablePush();
     await fetch(`${getApiUrl()}/users/logout`, {
       method: "POST",
-      credentials: "include", // 👈 required for cookie to be cleared
+      credentials: "include", // Required so the cookie is sent and cleared.
     });
 
     clearUser();
@@ -68,11 +68,10 @@ export default function Header({
       },
     ];
 
-    // ⚠️ Split by role instead of one shared "Members" item:
-    // trainers manage class rosters (/members), admins manage the
-    // full user list (/admin/members) — these are different pages
-    // with different data, so they need different links even though
-    // the label and icon look the same.
+    // Separate items per role: trainers manage class rosters (/members) and
+    // admins manage the full user list (/admin/members). They are different
+    // pages with different data, so they need different links even though the
+    // label and icon match.
     const adminItems = [
       {
         name: "Members",
@@ -106,9 +105,7 @@ export default function Header({
       },
     ];
 
-    // Was pointing at /trainers, which has no page in app/(routes) at all
-    // (confirmed empty) — repointed to the real management page instead
-    // of leaving a dead link in the nav.
+    // /trainers has no page, so this links to the real management page.
     const trainerItems = [
       {
         name: "Trainers",
@@ -136,7 +133,6 @@ export default function Header({
     <header className="fixed top-0 left-0 right-0 z-50 bg-black text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link
             href="/"
             className="text-2xl font-extrabold tracking-wide hover:text-orange-400 transition-colors"
@@ -144,7 +140,6 @@ export default function Header({
             Gym<span className="text-orange-500">Ontime</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
@@ -162,7 +157,6 @@ export default function Header({
             ))}
           </nav>
 
-          {/* Desktop User Menu */}
           <div className="hidden lg:flex items-center gap-4">
             <NotificationBell />
             <div className="px-3 py-1 bg-gray-800 rounded-full">
@@ -171,7 +165,6 @@ export default function Header({
               </span>
             </div>
 
-            {/* Profile Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -238,7 +231,6 @@ export default function Header({
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {menuOpen && (
           <div className="lg:hidden mt-4 pb-4 space-y-2">
             <div className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg mb-4">

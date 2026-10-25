@@ -12,9 +12,8 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Tracks whether the component is still mounted, so a slow poll
-  // response arriving after unmount doesn't try to setState on a
-  // gone component.
+  // Tracks whether the component is still mounted, so a slow poll response
+  // arriving after unmount does not call setState on an unmounted component.
   const isMounted = useRef(true);
 
   const fetchNotifications = useCallback(async () => {
@@ -32,8 +31,8 @@ export function useNotifications() {
       setNotifications(data.data?.notifications ?? []);
       setUnreadCount(data.data?.unreadCount ?? 0);
     } catch (err) {
-      // Fail quiet — a missed poll isn't worth surfacing an error for,
-      // the next poll 20s later will just try again.
+      // Fail quietly: a missed poll is not worth an error, and the next poll
+      // (20 seconds later) tries again.
       console.error("Failed to fetch notifications:", err);
     } finally {
       if (isMounted.current) setLoading(false);
@@ -53,9 +52,8 @@ export function useNotifications() {
   }, [fetchNotifications]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
-    // Optimistic update — feels instant, and this endpoint is simple
-    // enough that a failure is very unlikely to matter visually (worst
-    // case, next poll corrects it back).
+    // Optimistic update: it feels instant, and a failure is unlikely to
+    // matter (at worst the next poll corrects it).
     setNotifications((prev) =>
       prev.map((n) => (idOf(n) === notificationId ? { ...n, read: true } : n)),
     );

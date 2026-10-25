@@ -35,8 +35,8 @@ export function AdminTrainerCard({
     setConfirming(false);
   };
 
-  // Buttons need to keep working normally without also opening the
-  // details modal — each stops its click from bubbling up to the card.
+  // The buttons must keep working without also opening the details modal, so
+  // each stops its click from bubbling up to the card.
   const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
@@ -45,7 +45,7 @@ export function AdminTrainerCard({
         onClick={() => setShowDetails(true)}
         className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow"
       >
-        {/* next/image — Cloudinary + ui-avatars allowlisted in
+        {/* Avatar via next/image. Cloudinary and ui-avatars are allowlisted in
             next.config.js. */}
         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
           <Image

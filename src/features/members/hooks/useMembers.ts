@@ -45,7 +45,6 @@ export const useMembers = (
       let classes: any[] = [];
 
       if (userRole === "trainer") {
-        // Fetch only trainer's classes
         const res = await fetch(
           `${getApiUrl()}/trainers/my-classes`,
           { credentials: "include" },
@@ -53,14 +52,12 @@ export const useMembers = (
         const data = await res.json();
         classes = data.data ?? [];
       } else if (userRole === "admin") {
-        // Fetch all classes
         const res = await fetch(`${getApiUrl()}/classes`, {
           credentials: "include",
         });
         classes = await res.json();
       }
 
-      // Fetch members for each class
       const classesWithMembersData: ClassWithMembers[] = await Promise.all(
         classes
           .filter((cls: any) =>

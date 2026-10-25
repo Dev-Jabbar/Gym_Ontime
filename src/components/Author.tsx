@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
 
-// Author data with proper typing
 interface AuthorData {
   name: string;
   title: string;
@@ -23,7 +22,6 @@ const AUTHOR_DATA: AuthorData = {
   iconImage: "/arnold.png",
 };
 
-// Social Links Component
 const SocialLinks: React.FC = () => {
   const links = [
     {
@@ -59,7 +57,6 @@ const SocialLinks: React.FC = () => {
   );
 };
 
-// Quote Card Component
 interface QuoteCardProps {
   quote: string;
   iconImage: string;
@@ -68,18 +65,15 @@ interface QuoteCardProps {
 const QuoteCard: React.FC<QuoteCardProps> = ({ quote, iconImage }) => {
   return (
     <div className="relative">
-      {/* Opening Quote Mark */}
       <div className="absolute -left-4 -top-6 text-6xl font-serif text-blue-200 md:-left-6 md:-top-8 md:text-7xl 2xl:-left-8 2xl:-top-12 2xl:text-9xl">
         "
       </div>
 
-      {/* Quote Content */}
       <blockquote className="relative rounded-2xl bg-gradient-to-br from-white to-gray-50 p-6 shadow-xl md:p-8 2xl:p-12">
         <p className="relative z-10 font-light leading-relaxed text-gray-700 md:text-base lg:text-lg 2xl:text-2xl 2xl:leading-relaxed">
           {quote}
         </p>
 
-        {/* Decorative Icon */}
         <div className="mt-6 flex justify-end md:mt-8 2xl:mt-10">
           <div className="relative h-16 w-12 transition-transform duration-300 hover:scale-110 md:h-20 md:w-16 2xl:h-28 2xl:w-20">
             <Image
@@ -92,11 +86,9 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ quote, iconImage }) => {
           </div>
         </div>
 
-        {/* Gradient Border Effect */}
         <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-30" />
       </blockquote>
 
-      {/* Closing Quote Mark */}
       <div className="absolute -bottom-6 -right-4 text-6xl font-serif text-blue-200 md:-bottom-8 md:-right-6 md:text-7xl 2xl:-bottom-12 2xl:-right-8 2xl:text-9xl">
         "
       </div>
@@ -104,11 +96,9 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ quote, iconImage }) => {
   );
 };
 
-// Main Author Component
 const Author: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-gray-50 to-white py-12 md:py-16 lg:py-20 2xl:py-32">
-      {/* Background Decoration */}
       <div className="absolute inset-0 -z-10 opacity-20">
         <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-blue-300 blur-3xl" />
         <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-purple-300 blur-3xl" />
@@ -116,7 +106,6 @@ const Author: React.FC = () => {
 
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-8 md:flex-row md:items-start md:gap-12 lg:gap-16 2xl:gap-24">
-          {/* Banner Image Section */}
           <div className="group relative w-full overflow-hidden rounded-3xl shadow-2xl transition-all duration-500 hover:shadow-3xl md:w-1/2 lg:w-2/5">
             <div className="relative aspect-video w-full md:aspect-[4/5]">
               <Image
@@ -127,10 +116,8 @@ const Author: React.FC = () => {
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
               />
-              {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-              {/* Floating Badge */}
               <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-4 py-2 shadow-lg backdrop-blur-sm md:bottom-6 md:left-6 2xl:px-6 2xl:py-3">
                 <p className="text-xs font-semibold text-gray-800 md:text-sm 2xl:text-lg">
                   🏆 Fitness Innovation Award 2024
@@ -139,11 +126,8 @@ const Author: React.FC = () => {
             </div>
           </div>
 
-          {/* Content Section */}
           <div className="flex w-full flex-col space-y-6 md:w-1/2 md:space-y-8 lg:w-3/5 2xl:space-y-12">
-            {/* Profile Card */}
             <div className="flex items-center gap-4 md:gap-6 2xl:gap-8">
-              {/* Avatar */}
               <div className="group relative overflow-hidden rounded-full shadow-xl ring-4 ring-blue-500/20 transition-all duration-500 hover:ring-8 hover:ring-blue-500/30">
                 <div className="relative h-20 w-20 md:h-28 md:w-28 2xl:h-40 2xl:w-40">
                   <Image
@@ -154,11 +138,9 @@ const Author: React.FC = () => {
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 </div>
-                {/* Online Status Indicator */}
                 <div className="absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-white bg-green-500 md:h-5 md:w-5 2xl:h-7 2xl:w-7" />
               </div>
 
-              {/* Name and Title */}
               <div className="flex flex-col space-y-1 2xl:space-y-2">
                 <h2 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-2xl font-bold text-transparent md:text-3xl 2xl:text-5xl">
                   {AUTHOR_DATA.name}
@@ -175,7 +157,6 @@ const Author: React.FC = () => {
               </div>
             </div>
 
-            {/* Social Links */}
             <div className="flex items-center gap-4">
               <span className="text-sm font-medium text-gray-600 2xl:text-lg">
                 Connect:
@@ -183,7 +164,6 @@ const Author: React.FC = () => {
               <SocialLinks />
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-4 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-6 2xl:p-8">
               {[
                 { label: "Members", value: "50K+" },
@@ -201,7 +181,6 @@ const Author: React.FC = () => {
               ))}
             </div>
 
-            {/* Quote Section */}
             <div className="group">
               <QuoteCard
                 quote={AUTHOR_DATA.quote}
@@ -209,7 +188,6 @@ const Author: React.FC = () => {
               />
             </div>
 
-            {/* CTA Button */}
             <button className="group relative overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-purple-300 md:px-8 md:py-4 2xl:px-12 2xl:py-6 2xl:text-xl">
               <span className="relative z-10 flex items-center justify-center gap-2">
                 Read Full Story

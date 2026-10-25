@@ -29,14 +29,12 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
   const { initiatePayment, loading, error } = useBooking();
   const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null);
 
-  console.log("BookingModal rendered with classData:", classData); // Debugging line
   const isRecurring = classData.recurrence !== "none";
 
-  // ✅ Filter plans based on recurrence
   const planOptions: PlanOption[] = Object.entries(classData.pricing)
     .filter(([key, price]) => {
       if (!price || price === 0) return false;
-      // ✅ For one-off classes, only show oneTime
+      // For one-off classes, only show oneTime
       if (!isRecurring && key !== "oneTime") return false;
       return true;
     })
@@ -63,7 +61,6 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
     }
   };
 
-  console.log("selectedPlan:", selectedPlan); // Debugging line
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-md w-full p-6">
@@ -79,7 +76,6 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
           </button>
         </div>
 
-        {/* ✅ Show recurrence info */}
         <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-gray-50 rounded-lg">
           {isRecurring ? (
             <>
@@ -115,7 +111,6 @@ export function BookingModal({ classData, onClose }: BookingModalProps) {
         <div className="space-y-2 mb-6">
           {planOptions.map(
             (plan) => (
-              console.log("Rendering plan option:", plan),
               (
                 <label
                   key={plan.key}

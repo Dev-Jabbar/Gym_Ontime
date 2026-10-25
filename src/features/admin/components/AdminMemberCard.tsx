@@ -40,8 +40,8 @@ export function AdminMemberCard({
     setConfirming(null);
   };
 
-  // Buttons need to keep working normally without also opening the
-  // details modal — each stops its click from bubbling up to the card.
+  // The buttons must keep working without also opening the details modal, so
+  // each stops its click from bubbling up to the card.
   const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
@@ -50,10 +50,8 @@ export function AdminMemberCard({
         onClick={() => setShowDetails(true)}
         className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow"
       >
-        {/* Avatar — now next/image, since Cloudinary + ui-avatars are
-            allowlisted in next.config.js. Any pre-Cloudinary avatar URL
-            saved from an arbitrary source would still crash this; worth
-            a data check if that ever resurfaces. */}
+        {/* Avatar via next/image. Cloudinary and ui-avatars are allowlisted in
+            next.config.js; an avatar URL from any other source would fail to load. */}
         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
           <Image
             src={avatar}
@@ -64,13 +62,11 @@ export function AdminMemberCard({
           />
         </div>
 
-        {/* Info */}
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 truncate">{member.name}</p>
           <p className="text-sm text-gray-500 truncate">{member.email}</p>
           <p className="text-xs text-gray-400 mt-1">Joined {joinedDate}</p>
 
-          {/* Actions */}
           <div className="mt-3">
             {confirming ? (
               <div className="flex items-center gap-2">

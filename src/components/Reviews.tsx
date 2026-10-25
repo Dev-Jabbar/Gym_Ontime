@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
 
-// Review data with proper typing
 interface Review {
   id: string;
   name: string;
@@ -70,7 +69,6 @@ const REVIEWS: Review[] = [
   },
 ];
 
-// Star Rating Component
 interface StarRatingProps {
   rating: number;
 }
@@ -95,7 +93,6 @@ const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
   );
 };
 
-// Review Card Component
 interface ReviewCardProps {
   review: Review;
   index: number;
@@ -109,15 +106,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
         animationDelay: `${index * 100}ms`,
       }}
     >
-      {/* Card Container */}
       <div className="relative flex h-full flex-col  rounded-2xl bg-white shadow-xl transition-all duration-500 group-hover:shadow-2xl">
-        {/* Gradient Border Effect */}
         <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-40" />
 
-        {/* Avatar Section */}
         <div className="relative -mt-16 flex justify-center px-4 md:-mt-20 2xl:-mt-24">
           <div className="relative">
-            {/* Avatar Container with Gradient Ring */}
             <div className="relative overflow-hidden rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
               <div className="relative h-32 w-32 overflow-hidden rounded-full bg-white p-1 md:h-40 md:w-40 2xl:h-48 2xl:w-48">
                 <Image
@@ -130,7 +123,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
               </div>
             </div>
 
-            {/* Verified Badge */}
             <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-lg ring-4 ring-white 2xl:h-12 2xl:w-12">
               <svg
                 className="h-6 w-6 text-white 2xl:h-7 2xl:w-7"
@@ -147,9 +139,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="flex flex-1 flex-col space-y-4 p-6 pt-8 md:space-y-5 md:p-8 2xl:space-y-6 2xl:p-10">
-          {/* Name and Role */}
           <div className="space-y-2 text-center">
             <h3 className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl 2xl:text-3xl">
               {review.name}
@@ -166,14 +156,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
             </div>
           </div>
 
-          {/* Star Rating */}
           <div className="flex justify-center py-2">
             <StarRating rating={review.rating} />
           </div>
 
-          {/* Testimonial */}
           <div className="relative flex-1">
-            {/* Quote Icon */}
             <div className="absolute -left-2 -top-2 text-4xl text-blue-200 opacity-50 2xl:text-5xl">
               "
             </div>
@@ -182,7 +169,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
             </blockquote>
           </div>
 
-          {/* Decorative Bottom Border */}
           <div className="flex justify-center pt-4">
             <div className="h-1 w-16 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500 group-hover:w-24 2xl:h-1.5" />
           </div>
@@ -192,11 +178,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, index }) => {
   );
 };
 
-// Main Reviews Component
 const Reviews: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-20 md:py-28 lg:py-36 2xl:py-48">
-      {/* Background Decorative Elements */}
       <div className="absolute inset-0 -z-10 opacity-20">
         <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-blue-300 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-purple-300 blur-3xl" />
@@ -204,10 +188,8 @@ const Reviews: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        {/* Section Header */}
         <header className="mb-20 text-center md:mb-28 lg:mb-32 2xl:mb-40">
           <div className="relative inline-block">
-            {/* Badge */}
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-lg backdrop-blur-sm 2xl:px-6 2xl:py-3">
               <svg
                 className="h-5 w-5 text-yellow-500 2xl:h-6 2xl:w-6"
@@ -221,34 +203,29 @@ const Reviews: React.FC = () => {
               </span>
             </div>
 
-            {/* Main Heading */}
             <h2 className="relative mb-4 text-3xl font-extrabold italic tracking-wide md:text-4xl lg:text-5xl 2xl:text-7xl">
               <span className="relative z-10 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 What Our Members Say
               </span>
             </h2>
 
-            {/* Subtitle */}
             <p className="mx-auto max-w-2xl text-sm text-gray-600 md:text-base lg:text-lg 2xl:text-xl">
               Real stories from real people who transformed their fitness
               journey with GymOnTime
             </p>
 
-            {/* Decorative underline */}
             <div className="mt-6 flex justify-center">
               <div className="h-1 w-24 rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 md:w-32 2xl:h-2 2xl:w-48" />
             </div>
           </div>
         </header>
 
-        {/* Reviews Grid */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-24 pt-16 md:grid-cols-2 md:gap-x-10 md:gap-y-32 md:pt-20 lg:grid-cols-3 lg:gap-x-12 lg:gap-y-36 2xl:gap-x-16 2xl:gap-y-40 2xl:pt-24">
           {REVIEWS.map((review, index) => (
             <ReviewCard key={review.id} review={review} index={index} />
           ))}
         </div>
 
-        {/* Bottom Stats Section */}
         <div className="mt-20 md:mt-28 lg:mt-32 2xl:mt-40">
           <div className="rounded-3xl bg-white/80 p-8 shadow-2xl backdrop-blur-sm md:p-12 2xl:p-16">
             <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8 2xl:gap-12">
@@ -275,7 +252,6 @@ const Reviews: React.FC = () => {
           </div>
         </div>
 
-        {/* CTA Section */}
         <div className="mt-12 text-center md:mt-16 2xl:mt-20">
           <button className="group relative overflow-hidden rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-8 py-4 font-semibold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-purple-300 md:px-10 md:py-5 2xl:px-14 2xl:py-6 2xl:text-xl">
             <span className="relative z-10 flex items-center justify-center gap-2">

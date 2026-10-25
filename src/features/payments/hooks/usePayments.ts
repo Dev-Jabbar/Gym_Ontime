@@ -99,12 +99,10 @@ export const usePayments = (): UsePaymentsReturn => {
       .filter((p) => p.status === "completed")
       .reduce((sum, p) => sum + p.amount, 0);
 
-    // NOTE: this is a calendar-month window (resets on the 1st), which
-    // is a different convention from the dashboard's "rolling last 30
-    // days" revenue stat (see features/dashboard/hooks/useDashboard.ts).
-    // Not a bug exactly — just worth knowing the two numbers answer
-    // slightly different questions and won't always match if compared
-    // side by side near a month boundary.
+    // This is a calendar-month window (it resets on the 1st), unlike the
+    // dashboard's rolling last-30-days revenue (see
+    // features/dashboard/hooks/useDashboard.ts). The two answer slightly
+    // different questions and can differ near a month boundary.
     const monthRevenue = payments
       .filter((p) => {
         const date = new Date(p.createdAt);

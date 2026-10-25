@@ -15,11 +15,8 @@ export default function Toggle({ show, onToggle }: ToggleProps) {
       aria-label={show ? "Hide password" : "Show password"}
       className="text-gray-400 hover:text-gray-600 transition-colors"
     >
-      {/* show=true means the password is currently visible as text —
-          EyeOff signals "click to hide", matching the convention used
-          on the Login page. The original had this inverted (showed
-          <Eye> while already revealed) and a leftover text-red-900
-          that didn't match anything else in the app. */}
+      {/* show=true means the password is visible as text, so the EyeOff icon
+          signals "click to hide" (the same convention as the login page). */}
       {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
     </button>
   );

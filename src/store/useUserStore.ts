@@ -12,17 +12,16 @@ export interface User {
 interface UserStore {
   user: User | null;
   loading: boolean;
-  // Tracks whether we've attempted a fetch yet, so we only ever call
-  // /users/me once per app load instead of once per page navigation.
+  // Tracks whether a fetch has been attempted, so /users/me is called once
+  // per app load instead of once per page navigation.
   hasFetched: boolean;
 
   fetchUser: () => Promise<void>;
   setUser: (user: User) => void;
   clearUser: () => void;
-  // Patches just the avatar on the cached user — used right after an
-  // upload succeeds, so the Header (and anywhere else reading from
-  // this store) updates immediately instead of showing stale data
-  // until the next full page reload forces a fresh /users/me fetch.
+  // Patches only the avatar on the cached user. Used right after an upload
+  // succeeds, so the Header (and anything else reading the store) updates
+  // immediately instead of showing stale data until the next reload.
   updateAvatar: (avatar: string) => void;
 }
 
@@ -32,9 +31,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
   hasFetched: false,
 
   fetchUser: async () => {
-    // Guard against duplicate fetches — e.g. if two components mount
-    // around the same time and both call this before the first
-    // request resolves.
+    // Guard against duplicate fetches, for example when two components mount
+    // at the same time and both call this before the first request resolves.
     if (get().hasFetched) return;
     set({ hasFetched: true });
 
@@ -54,17 +52,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   setUser: (user) => set({ user, loading: false, hasFetched: true }),
 
-  // Called on logout so the next login doesn't show stale data, and so
-  // a future fetchUser() call is allowed to run again.
+  // Called on logout so the next login does not show stale data and a later
+  // fetchUser() is allowed to run again.
   //
-  // ⚠️ loading is set to true here, not false — right after clearing,
-  // a fresh fetch is always about to happen (login pushes to a new
-  // page immediately after calling this). If this were false, any
-  // component reading the store between this call and the fetch
-  // resolving would see {user: null, loading: false} and wrongly
-  // conclude "definitely not logged in" — which is exactly what
-  // caused the login page to bounce back to /login before the real
-  // fetch could complete.
+  // `loading` is set to true, not false: a fresh fetch is about to happen
+  // (login navigates immediately after calling this). If it were false, a
+  // component reading the store before the fetch resolved would see
+  // { user: null, loading: false } and wrongly conclude "not logged in",
+  // which made the login page bounce back to /login.
   clearUser: () => set({ user: null, loading: true, hasFetched: false }),
 
   updateAvatar: (avatar) => {

@@ -36,7 +36,7 @@ export interface UpdateProfileData {
     name: string;
     phone: string;
   };
-  // ✅ trainer specific
+  // trainer specific
   experience?: number;
   certifications?: string[];
   availability?: string;

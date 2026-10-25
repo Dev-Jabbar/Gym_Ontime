@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
 
-// Feature data with proper typing
 interface Feature {
   id: string;
   image: string;
@@ -95,7 +94,6 @@ const FEATURES: Feature[] = [
   },
 ];
 
-// Feature Card Component
 interface FeatureCardProps {
   feature: Feature;
   index: number;
@@ -136,7 +134,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index }) => {
           />
         </div>
 
-        {/* Gradient Overlay on Hover */}
         <div
           className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${
             isRounded ? "rounded-full" : "rounded-2xl"
@@ -144,7 +141,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index }) => {
         />
       </div>
 
-      {/* Content */}
       <div className="flex max-w-xs flex-col items-center space-y-2 text-center 2xl:max-w-md">
         <h3
           className={`bg-gradient-to-r ${feature.accentColor} bg-clip-text text-sm font-bold text-transparent md:text-base lg:text-lg 2xl:text-2xl`}
@@ -159,24 +155,20 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index }) => {
   );
 };
 
-// Main Component
 const WhatWeOffer: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white py-16 md:py-24 lg:py-32 2xl:py-40">
-      {/* Background Decoration */}
       <div className="absolute inset-0 -z-10 opacity-30">
         <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-blue-200 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-purple-200 blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <header className="mb-12 text-center md:mb-16 lg:mb-20 2xl:mb-24">
           <h2 className="relative inline-block text-3xl font-extrabold italic tracking-wide text-gray-800 md:text-4xl lg:text-5xl 2xl:text-7xl">
             <span className="relative z-10 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               What We Offer
             </span>
-            {/* Decorative underline */}
             <div className="absolute -bottom-2 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 md:w-32 2xl:-bottom-4 2xl:h-2 2xl:w-48" />
           </h2>
           <p className="mt-6 text-sm text-gray-600 md:text-base lg:text-lg 2xl:mt-8 2xl:text-xl">
@@ -185,14 +177,12 @@ const WhatWeOffer: React.FC = () => {
           </p>
         </header>
 
-        {/* Features Grid */}
         <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-3 lg:gap-16 xl:grid-cols-4 2xl:gap-20">
           {FEATURES.map((feature, index) => (
             <FeatureCard key={feature.id} feature={feature} index={index} />
           ))}
         </div>
 
-        {/* Bottom CTA */}
         <div className="mt-16 text-center md:mt-20 lg:mt-24 2xl:mt-32">
           <button className="group relative overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 md:px-10 md:py-5 2xl:px-14 2xl:py-6 2xl:text-xl">
             <span className="relative z-10">Explore All Features</span>

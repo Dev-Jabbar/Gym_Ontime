@@ -36,10 +36,10 @@ export interface Class {
   enrolled: number;
   status: "upcoming" | "ongoing" | "completed" | "canceled";
   duration: string;
-  recurrence: RecurrenceType; // ✅
-  recurrenceDays: DayOfWeek[]; // ✅
-  // Optional banner image (Cloudinary URL) — null/undefined means the
-  // card renders without a banner, not an error state.
+  recurrence: RecurrenceType;
+  recurrenceDays: DayOfWeek[];
+  // Optional banner image (Cloudinary URL). Null or undefined means the card
+  // renders without a banner; it is not an error state.
   image?: string | null;
 }
 
@@ -80,9 +80,9 @@ export interface ClassCardProps {
   onEdit?: (classId: string) => void;
   onCancel?: (classId: string) => void;
   trainerProfileId?: string;
-  // Whether the current member already has valid access to this class
-  // (completed one-time payment, or an active non-expired subscription).
-  // Undefined/omitted for non-member roles, where it's irrelevant.
+  // Whether the current member already has valid access to this class (a
+  // completed one-time payment, or an active non-expired subscription).
+  // Omitted for non-member roles, where it is irrelevant.
   isBooked?: boolean;
 }
 

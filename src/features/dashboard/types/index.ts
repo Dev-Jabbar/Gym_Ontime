@@ -36,7 +36,7 @@ export interface DashboardStats {
   upcomingClasses: UpcomingClass[];
   capacityUsage: number;
   revenueData: number[];
-  // ✅ member-specific
+  // member-specific
   myUpcomingClasses: number;
   myActiveSubscription: string | null;
   classesBookedThisMonth: number;

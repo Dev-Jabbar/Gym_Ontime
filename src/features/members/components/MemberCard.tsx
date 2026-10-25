@@ -15,7 +15,6 @@ export function MemberCard({ member }: MemberCardProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 flex items-start gap-4">
-      {/* Avatar */}
       <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
         <Image
           src={avatar}
@@ -26,7 +25,6 @@ export function MemberCard({ member }: MemberCardProps) {
         />
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-gray-900 truncate">
           {member.userId?.name ?? "Unknown"}

@@ -19,11 +19,9 @@ interface UseBookingReturn {
 }
 
 /**
- * Kicks off the paid-booking flow. On the backend, this single request
- * atomically places a 15-minute hold on the seat (so two people can't
- * both be sent to pay for the same last spot) before returning a
- * Paystack checkout URL — see `payment.service.ts` / `class.repository.ts`
- * on the backend for the actual reservation logic this triggers.
+ * Starts the paid-booking flow. This single request makes the backend place
+ * a 15-minute hold on the seat (so two people cannot both be sent to pay for
+ * the last spot) before it returns a Paystack checkout URL.
  */
 export const useBooking = (): UseBookingReturn => {
   const [loading, setLoading] = useState(false);
@@ -50,11 +48,9 @@ export const useBooking = (): UseBookingReturn => {
         throw new Error(result.message || "Failed to initiate payment");
       }
 
-      // Full-page redirect to Paystack's hosted checkout. `loading` is
-      // deliberately left `true` here rather than reset — the browser
-      // is about to navigate away entirely, so flipping it back to
-      // `false` would only cause a one-frame flash of the un-loading
-      // UI right before the page unloads.
+      // Full-page redirect to Paystack's hosted checkout. `loading` is left
+      // `true` on purpose: the browser is about to navigate away, so resetting
+      // it would only flash the un-loading UI for one frame.
       window.location.href = result.data.checkoutUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

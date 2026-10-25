@@ -24,7 +24,6 @@ export function SchedulePage({
   trainerProfileId,
 }: ScheduleProps) {
 
-  console.log("🔥 SchedulePage rendered");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -41,11 +40,10 @@ export function SchedulePage({
 
   const { classes, loading, refetch } = useSchedule(selectedDate);
 
-  // Which classes the current member already has valid access to —
-  // used both to show "Booked" instead of "Book Now" on each card, and
-  // for the new "Booked" filter option. No-op for admin/trainer roles
-  // (returns an empty set immediately). Computed BEFORE useClassFilters
-  // since that hook needs it to handle the "booked" filter.
+  // The classes the current member already has valid access to. Used to show
+  // "Booked" instead of "Book Now" on each card and for the "Booked" filter.
+  // A no-op for admin and trainer roles (returns an empty set). It must run
+  // before useClassFilters, which needs it for the "booked" filter.
   const { bookedClassIds } = useBookedClasses(userRole);
 
   const filteredClasses = useClassFilters(
@@ -56,15 +54,14 @@ export function SchedulePage({
   );
 
 
-  console.log("filteredClasses:", filteredClasses);
 
-  // Auto-open the create modal when arriving via ?action=create — e.g.
-  // from the dashboard's "Create New Class" Quick Action, since this
-  // modal lives in local state rather than being its own route.
+  // Auto-open the create modal when arriving via ?action=create (for example
+  // from the dashboard's "Create New Class" quick action), because the modal
+  // lives in local state rather than its own route.
   useEffect(() => {
     if (searchParams.get("action") === "create" && userRole === "admin") {
       setShowCreateModal(true);
-      // Strip the query param so refreshing/closing doesn't reopen it.
+      // Strip the query param so refreshing or closing does not reopen the modal.
       router.replace("/schedule");
     }
   }, [searchParams, userRole, router]);
@@ -141,7 +138,6 @@ export function SchedulePage({
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 ">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 mt-20">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -162,7 +158,6 @@ export function SchedulePage({
           )}
         </div>
 
-        {/* Date Navigator & Filters */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <DateNavigator
@@ -182,7 +177,6 @@ export function SchedulePage({
           </div>
         </div>
 
-        {/* Classes Grid */}
         {filteredClasses.length === 0 ? (
           <EmptyState />
         ) : (
@@ -202,7 +196,6 @@ export function SchedulePage({
           </div>
         )}
 
-        {/* Booking Modal */}
         {bookingClass && (
           <BookingModal
             classData={bookingClass}
@@ -210,7 +203,6 @@ export function SchedulePage({
           />
         )}
 
-        {/* Create Class Modal */}
         {showCreateModal && (
           <CreateClassModal
             onClose={() => setShowCreateModal(false)}
@@ -221,7 +213,6 @@ export function SchedulePage({
           />
         )}
 
-        {/* Edit Class Modal */}
         {editingClass && (
           <EditClassModal
             classData={editingClass}
@@ -233,7 +224,6 @@ export function SchedulePage({
           />
         )}
 
-        {/* Cancel Confirmation Dialog */}
 
         {cancellingClassId && (
           <CancelClassDialog

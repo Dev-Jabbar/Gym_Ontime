@@ -18,7 +18,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
   const [members, setMembers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  // tracks which specific row has an upgrade/delete request in flight
+  // Tracks which row has an upgrade or delete request in flight.
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async () => {
@@ -26,9 +26,9 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
     setError(null);
 
     try {
-      // Users and member profiles live in separate collections —
-      // avatar only exists on MemberProfile, not on User — so fetch
-      // both in parallel and merge them client-side.
+      // Users and member profiles are separate resources, and the avatar only
+      // exists on MemberProfile, so fetch both in parallel and merge them on
+      // the client.
       const [usersRes, profilesRes] = await Promise.all([
         fetch(`${getApiUrl()}/users`, {
           credentials: "include",
@@ -41,14 +41,13 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
       if (!usersRes.ok) throw new Error("Failed to fetch users");
 
       const usersData = await usersRes.json();
-      // Defensive: handle either a raw array or a { data: [] } wrapper
+      // Defensive: accept either a raw array or a { data: [] } wrapper.
       const users: AdminUser[] = Array.isArray(usersData)
         ? usersData
         : (usersData.data ?? []);
 
-      // Avatars (and now full profile details) are best-effort: if this
-      // call fails for any reason, fall back to just the base user data
-      // rather than failing the whole page.
+      // Avatars and profile details are best effort: if this call fails, fall
+      // back to the base user data instead of failing the whole page.
       let profileByUserId: Record<string, any> = {};
       if (profilesRes.ok) {
         const profilesData = await profilesRes.json();
@@ -58,8 +57,8 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
 
         profileByUserId = profiles.reduce(
           (acc, profile) => {
-            // userId may come back as a raw ObjectId string, or as a
-            // populated object ({ _id, name, email }) — handle both.
+            // userId may be a raw id string or a populated object
+            // ({ _id, name, email }); handle both.
             const userId =
               typeof profile.userId === "string"
                 ? profile.userId
@@ -73,10 +72,9 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
                 fitnessGoal: profile.fitnessGoal ?? null,
                 healthNotes: profile.healthNotes ?? null,
                 emergencyContact: profile.emergencyContact ?? null,
-                // The MemberProfile document's own _id — needed later
-                // to fetch "classes joined" via
-                // GET /classes/by-member/:memberProfileId, since Class
-                // .members references MemberProfile, not User.
+                // The MemberProfile's own id, needed later to fetch "classes
+                // joined" via GET /classes/by-member/:memberProfileId, because
+                // Class.members references MemberProfile, not User.
                 memberProfileId: profile._id ?? profile.id ?? null,
               };
             }
@@ -86,12 +84,12 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
         );
       }
 
-      // Only ACTIVE members belong in this management list:
-      // - role === "member" excludes trainers/admins (this UI shouldn't
-      //   upgrade/delete them)
-      // - isActive !== false excludes soft-deleted users. deleteUser()
-      //   never flips role, it only sets isActive: false, so without this
-      //   check a "deleted" member would keep reappearing after refetch.
+      // Only active members belong in this management list:
+      // - role === "member" excludes trainers and admins, which this UI must
+      //   not upgrade or delete.
+      // - isActive !== false excludes soft-deleted users. Deleting a user only
+      //   sets isActive to false (the role is unchanged), so without this
+      //   check a deleted member would reappear after a refetch.
       const onlyMembers = users
         .filter((u) => u.role === "member" && u.isActive !== false)
         .map((u) => {
@@ -166,7 +164,7 @@ export const useAdminMembers = (): UseAdminMembersReturn => {
 
       if (!res.ok) throw new Error("Delete failed");
 
-      // optimistic removal — no need to refetch the whole list for a delete
+      // Optimistic removal: no need to refetch the whole list after a delete.
       setMembers((prev) => prev.filter((m) => m._id !== id));
       return true;
     } catch (err) {

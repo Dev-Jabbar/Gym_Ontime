@@ -25,9 +25,7 @@ export function PaymentsTable({
 }: PaymentsTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-      {/* Filters */}
       <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-3">
-        {/* Search */}
         <div className="relative flex-1">
           <TbSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -39,7 +37,6 @@ export function PaymentsTable({
           />
         </div>
 
-        {/* Status filter */}
         <select
           value={filterStatus}
           onChange={(e) =>
@@ -54,7 +51,6 @@ export function PaymentsTable({
         </select>
       </div>
 
-      {/* Table */}
       {payments.length === 0 ? (
         <div className="p-8 text-center text-gray-500">No payments found.</div>
       ) : (

@@ -16,12 +16,9 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
   useEffect(() => {
-    // Wait until we're sure — loading distinguishes "still checking"
-    // from "definitely not logged in". Without this, a visitor with
-    // no session cookie (e.g. first-ever visit, or after logout) just
-    // saw a permanently blank page with no header and no way forward,
-    // since this component always returned null for !user with no
-    // redirect at all.
+    // Wait until loading is finished: `loading` tells "still checking" apart
+    // from "definitely not logged in". Without it, a visitor with no session
+    // cookie would see a permanently blank page with no redirect.
     if (!loading && !user && !isAuthPage) {
       router.push("/login");
     }
@@ -31,7 +28,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Still checking, or about to redirect — render nothing either way.
+  // Still checking, or about to redirect: render nothing either way.
   if (!user) return null;
 
   return (

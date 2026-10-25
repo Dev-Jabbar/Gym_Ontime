@@ -44,18 +44,16 @@ const DAYS_OF_WEEK = [
   { value: "sunday", label: "Sun" },
 ];
 
-// Real session counts, tied to how the class actually recurs —
-// previously this assumed a fixed 4 sessions/week for EVERY class
-// regardless of its actual schedule, which is why a class meeting
-// only 3x/week (or 7x/week for daily) still got priced as if it met
-// exactly 4x/week. That mismatch compounds badly the longer the tier.
+// Real session counts, tied to how the class actually recurs. A class that
+// meets 3 times a week (or 7 for daily) must not be priced as if it met 4
+// times a week; the mismatch compounds over longer subscription tiers.
 const getSessionsPerWeek = (
   recurrence: "none" | "daily" | "weekly",
   selectedDays: string[],
 ): number => {
   if (recurrence === "daily") return 7;
   if (recurrence === "weekly") return Math.max(selectedDays.length, 1);
-  return 0; // "none" — no subscription tiers apply to a one-off class
+  return 0; // "none": a one-off class has no subscription tiers
 };
 
 const calculatePrices = (perSession: number, sessionsPerWeek: number) => {
@@ -63,9 +61,8 @@ const calculatePrices = (perSession: number, sessionsPerWeek: number) => {
     return null;
   }
 
-  // 4.33 = average weeks per month (52 weeks / 12 months), not a
-  // flat "4" — small difference, but it's the actual number and adds
-  // up over a year.
+  // 4.33 is the average number of weeks per month (52 / 12), not a flat 4,
+  // which adds up over a year.
   const monthlySessions = Math.round(sessionsPerWeek * 4.33);
   const threeMonthsSessions = sessionsPerWeek * 13; // 13 weeks in 3 months
 
@@ -84,14 +81,14 @@ export function CreateClassModal({
   const [error, setError] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
-  // Trainer list for the required dropdown — a class can't be created
-  // without one, so this needs to load before the form is usable.
+  // Trainer list for the required dropdown. A class cannot be created
+  // without a trainer, so it must load before the form is usable.
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
   const [trainersError, setTrainersError] = useState<string | null>(null);
 
-  // Optional class banner image — uploads immediately on selection,
-  // same pattern as ProfileForm's avatar upload.
+  // Optional class banner image. It uploads as soon as it is selected, like
+  // the avatar upload in ProfileForm.
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
@@ -156,10 +153,9 @@ export function CreateClassModal({
       setValue("monthly", prices.monthly);
       setValue("threeMonths", prices.threeMonths);
     }
-    // Recalculates on every relevant change — previously this only
-    // depended on perSessionPrice, so toggling which days a class
-    // meets on never updated the subscription prices at all, even
-    // though session count (and therefore price) directly depends on it.
+    // Recalculate on every relevant change. The session count (and therefore
+    // the price) depends on which days the class meets, so toggling days must
+    // update the subscription prices.
   }, [perSessionPrice, sessionsPerWeek, setValue]);
 
   const toggleDay = (day: string) => {
@@ -245,10 +241,8 @@ export function CreateClassModal({
   const labelClass = "block text-sm font-medium text-gray-600 mb-1";
   const errorClass = "text-xs text-red-500 mt-1";
 
-  // Real session counts for this specific class's schedule, shown next
-  // to each tier so the admin can see WHY a price is what it is —
-  // previously these were hardcoded (4/16/48/96/192) regardless of how
-  // often the class actually meets.
+  // The real session counts for this class's schedule, shown next to each
+  // tier so the admin can see why a price is what it is.
   const pricingRows = [
     {
       key: "weekly",
@@ -284,7 +278,6 @@ export function CreateClassModal({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          {/* Name */}
           <div>
             <label className={labelClass}>Class Name *</label>
             <input
@@ -296,7 +289,6 @@ export function CreateClassModal({
             {errors.name && <p className={errorClass}>{errors.name.message}</p>}
           </div>
 
-          {/* Description */}
           <div>
             <label className={labelClass}>Description</label>
             <textarea
@@ -307,9 +299,8 @@ export function CreateClassModal({
             />
           </div>
 
-          {/* Class Image — optional banner shown at the top of the
-              class card. No image means the card just renders without
-              a banner, same as it does today. */}
+          {/* Class image: an optional banner shown at the top of the class
+              card. Without one, the card renders without a banner. */}
           <div>
             <label className={labelClass}>Class Image (optional)</label>
             {imageUrl ? (
@@ -355,7 +346,7 @@ export function CreateClassModal({
             {imageError && <p className={errorClass}>{imageError}</p>}
           </div>
 
-          {/* Trainer — required, no class can be created without one */}
+          {/* Trainer: required; no class can be created without one */}
           <div>
             <label className={labelClass}>Trainer *</label>
             {trainersLoading ? (
@@ -389,7 +380,6 @@ export function CreateClassModal({
             )}
           </div>
 
-          {/* Schedule & Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Start Date & Time *</label>
@@ -414,7 +404,6 @@ export function CreateClassModal({
             </div>
           </div>
 
-          {/* Recurrence */}
           <div>
             <label className={labelClass}>Recurrence</label>
             <select {...register("recurrence")} className={inputClass}>
@@ -424,7 +413,7 @@ export function CreateClassModal({
             </select>
           </div>
 
-          {/* Days of week — only show when weekly */}
+          {/* Days of the week: only shown for weekly classes */}
           {recurrence === "weekly" && (
             <div>
               <label className={labelClass}>Select Days *</label>
@@ -452,7 +441,6 @@ export function CreateClassModal({
             </div>
           )}
 
-          {/* Capacity */}
           <div>
             <label className={labelClass}>Capacity *</label>
             <input
@@ -464,7 +452,6 @@ export function CreateClassModal({
             />
           </div>
 
-          {/* Per Session Price */}
           <div>
             <label className={labelClass}>Per Session Price (₦) *</label>
             <input
@@ -494,7 +481,6 @@ export function CreateClassModal({
             </p>
           </div>
 
-          {/* Subscription prices */}
           {Number(perSessionPrice) >= MIN_PRICE && recurrence !== "none" && (
             <div>
               <label className={labelClass}>

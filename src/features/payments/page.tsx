@@ -44,7 +44,6 @@ export function PaymentsPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8 mt-20">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             Payments
@@ -54,7 +53,6 @@ export function PaymentsPage() {
           </p>
         </div>
 
-        {/* Stats */}
         <PaymentStatsCards
           totalRevenue={stats.totalRevenue}
           monthRevenue={stats.monthRevenue}
@@ -62,7 +60,6 @@ export function PaymentsPage() {
           failedCount={stats.failedCount}
         />
 
-        {/* Payments Table */}
         <PaymentsTable
           payments={filteredPayments}
           filterStatus={filterStatus}

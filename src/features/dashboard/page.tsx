@@ -34,7 +34,6 @@ export function DashboardPage({ userRole }: DashboardProps) {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8 mt-20">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             {userRole === "admin" && "Admin Dashboard"}
@@ -46,7 +45,6 @@ export function DashboardPage({ userRole }: DashboardProps) {
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {userRole === "admin" && (
             <>
@@ -135,16 +133,13 @@ export function DashboardPage({ userRole }: DashboardProps) {
           )}
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
             {/* Revenue Chart (Admin only) */}
             {userRole === "admin" && (
               <RevenueChart revenueData={stats.revenueData} />
             )}
 
-            {/* Upcoming Classes */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">
@@ -165,17 +160,14 @@ export function DashboardPage({ userRole }: DashboardProps) {
             </div>
           </div>
 
-          {/* Right Column - 1/3 width */}
           <div className="space-y-6">
-            {/* Capacity Usage */}
             <CapacityChart capacityUsage={stats.capacityUsage} />
 
-            {/* Recent Signups (Admin/Trainer only) */}
+            {/* Recent signups (admin only) */}
             {userRole === "admin" && (
               <RecentSignups signups={stats.recentSignups} />
             )}
 
-            {/* Quick Actions */}
             <QuickActions userRole={userRole} />
           </div>
         </div>

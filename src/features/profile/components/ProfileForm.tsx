@@ -62,7 +62,7 @@ type FormValues = {
 const inputClass =
   "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500";
 
-// ── Field component moved OUTSIDE so it never gets redefined on re-render ──
+// Defined outside the form component so it is not recreated on every render.
 function Field({
   label,
   value,
@@ -159,8 +159,7 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
           availability: p.availability ?? "",
         });
       }
-      // Admin has no extra fields beyond name/email/avatar — nothing
-      // to reset here for that role.
+      // The admin has no extra fields beyond name, email and avatar, so there is nothing to reset.
     } else {
       reset((prev) => ({ ...prev, name: profile.name }));
     }
@@ -202,9 +201,8 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
       payload.gender = data.gender || undefined;
     }
 
-    // Admin: only `name` (already set above) — AdminProfile has no
-    // other editable fields besides avatar, which is handled separately
-    // via handleAvatarChange rather than this form submit.
+    // Admin: only `name` (set above). AdminProfile has no other editable
+    // field besides the avatar, which handleAvatarChange handles separately.
 
     try {
       await onUpdate(payload);
@@ -219,9 +217,8 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
     setEditing(false);
   };
 
-  // Uploads immediately on file selection, independent of the rest of
-  // the form's Save/Cancel flow — avatar changes feel more responsive
-  // this way than being gated behind the full form submit.
+  // Uploads as soon as a file is selected, independently of the form's
+  // Save and Cancel flow, so avatar changes feel responsive.
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -244,24 +241,22 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
       );
     } finally {
       setUploading(false);
-      // Reset the input so selecting the same file again still fires
-      // onChange (browsers otherwise treat it as "no change").
+      // Reset the input so selecting the same file again still fires onChange
+      // (browsers otherwise treat it as no change).
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  // ✅ Real uploaded avatar (from Cloudinary) shown when present,
-  // falling back to a generated placeholder — was previously ALWAYS
-  // the generated placeholder, even after a real avatar existed.
+  // Show the real uploaded avatar (Cloudinary) when present, otherwise a
+  // generated placeholder.
   const currentAvatar = (profile.profile as any)?.avatar;
   const avatar = currentAvatar || getAvatarFallback(profile.name, 100);
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
-      {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div className="relative w-24 h-24 mb-3">
-          {/* next/image — Cloudinary + ui-avatars allowlisted in
+          {/* Avatar via next/image. Cloudinary and ui-avatars are allowlisted in
               next.config.js. */}
           <Image
             src={avatar}
@@ -303,7 +298,7 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
         </span>
       </div>
 
-      {/* Read-only view shown OUTSIDE the form when not editing */}
+      {/* Read-only view, shown outside the form when not editing */}
       {!editing && (
         <div className="space-y-5">
           <Field
@@ -450,9 +445,6 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
             </>
           )}
 
-          {/* Admin has nothing extra beyond name/email/avatar above —
-              no additional read-only fields needed for that role. */}
-
           <div className="mt-6">
             <button
               type="button"
@@ -466,7 +458,6 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
         </div>
       )}
 
-      {/* Editable form shown only when editing */}
       {editing && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Field
@@ -689,9 +680,6 @@ export function ProfileForm({ profile, updating, onUpdate }: ProfileFormProps) {
               </Field>
             </>
           )}
-
-          {/* Admin: name is already covered above; nothing else to
-              edit here since AdminProfile has no additional fields. */}
 
           <div className="mt-6 flex gap-3">
             <button

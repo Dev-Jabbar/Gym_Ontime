@@ -48,7 +48,6 @@ export function MembersPage({ userRole, classId }: MembersPageProps) {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8 mt-20">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             {classId ? "Class Members" : "My Members"}
@@ -60,7 +59,6 @@ export function MembersPage({ userRole, classId }: MembersPageProps) {
           </p>
         </div>
 
-        {/* Classes with Members */}
         <div className="space-y-8">
           {classesWithMembers.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm p-8 text-center text-gray-500">
@@ -72,7 +70,6 @@ export function MembersPage({ userRole, classId }: MembersPageProps) {
                 key={cls.classId}
                 className="bg-white rounded-xl shadow-sm p-6"
               >
-                {/* Class Header */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                   <div>
                     <h2 className="text-lg font-bold text-gray-900">
@@ -97,7 +94,6 @@ export function MembersPage({ userRole, classId }: MembersPageProps) {
                   </div>
                 </div>
 
-                {/* Members Grid */}
                 {cls.members.length === 0 ? (
                   <p className="text-gray-500 text-sm text-center py-4">
                     No members enrolled in this class yet.

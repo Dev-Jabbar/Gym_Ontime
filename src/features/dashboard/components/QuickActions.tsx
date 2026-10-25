@@ -16,16 +16,15 @@ export const QuickActions = ({ userRole }: QuickActionsProps) => {
         return [
           {
             label: "Create New Class",
-            // SchedulePage's CreateClassModal is opened via local state,
-            // not its own route — so we navigate to /schedule with a
-            // query param it checks on load to auto-open the modal.
+            // The create-class modal is opened from local state in
+            // SchedulePage, not its own route, so navigate to /schedule with a
+            // query param it checks on load.
             onClick: () => router.push("/schedule?action=create"),
           },
           {
             label: "Promote Member",
-            // Sends admin to the members list, where Upgrade to Trainer
-            // already works (built earlier) — real, working action,
-            // unlike the old "Add New Member" which had nowhere to go.
+            // Sends the admin to the members list, where "Upgrade to Trainer"
+            // is available.
             onClick: () => router.push("/admin/members"),
           },
         ];
@@ -38,9 +37,7 @@ export const QuickActions = ({ userRole }: QuickActionsProps) => {
           },
         ];
       case "trainer":
-        // Was previously missing entirely — trainers saw no Quick
-        // Actions panel at all. These map to the two real pages a
-        // trainer role has access to.
+        // Trainers get the two pages their role can access.
         return [
           {
             label: "View My Classes",

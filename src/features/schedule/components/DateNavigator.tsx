@@ -37,12 +37,11 @@ export function DateNavigator({
         <span className="font-semibold text-gray-900">
           {formatFullDate(selectedDate)}
         </span>
-        {/* Hidden date input */}
         <input
           ref={inputRef}
           type="date"
           className="absolute inset-0 opacity-0 cursor-pointer w-full"
-          value={selectedDate ? selectedDate.toISOString().split("T")[0] : ""} // ✅ handle null
+          value={selectedDate ? selectedDate.toISOString().split("T")[0] : ""} // handle null
           onChange={handleDateChange}
         />
       </div>
@@ -56,7 +55,7 @@ export function DateNavigator({
         <TbChevronRight className="w-6 h-6 text-gray-600" />
       </button>
 
-      {/* ✅ Show All button — only visible when a date is selected */}
+      {/* Show All button — only visible when a date is selected */}
       {selectedDate && (
         <button
           onClick={onClearDate}

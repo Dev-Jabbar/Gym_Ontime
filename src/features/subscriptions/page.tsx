@@ -39,7 +39,6 @@ export function SubscriptionsPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8 mt-20">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             My Subscriptions
@@ -49,7 +48,6 @@ export function SubscriptionsPage() {
           </p>
         </div>
 
-        {/* Active Subscriptions */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             Active Subscriptions
@@ -68,7 +66,6 @@ export function SubscriptionsPage() {
           )}
         </div>
 
-        {/* Payment History */}
         <div>
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             Payment History

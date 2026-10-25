@@ -12,16 +12,15 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    // Wait until the store is done fetching — only then can we tell
-    // "not logged in" apart from "still checking".
+    // Wait for the store to finish fetching; only then can "not logged in" be
+    // told apart from "still checking".
     if (loading) return;
 
     if (!user) {
-      // Not authenticated at all -> send to login instead of leaving
-      // them on a blank page.
+      // Not authenticated: send to login instead of leaving a blank page.
       router.push("/login");
     } else if (user.role !== "admin") {
-      // Logged in, but wrong role -> send to their own dashboard.
+      // Logged in with the wrong role: send to the user's own dashboard.
       router.push("/dashboard");
     }
   }, [user, loading, router]);

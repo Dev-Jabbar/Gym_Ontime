@@ -37,7 +37,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         const paymentsData = await paymentsRes.json();
         const payments = paymentsData.data ?? [];
 
-        // ✅ Ongoing first, then upcoming, max 5
+        // Ongoing first, then upcoming, max 5
         const upcomingClasses = [
           ...classes.filter((cls: any) => cls.status === "ongoing"),
           ...classes.filter((cls: any) => cls.status === "upcoming"),
@@ -63,12 +63,10 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             status: cls.status,
           }));
 
-        // My upcoming classes count
         const myUpcomingClasses = classes.filter(
           (cls: any) => cls.status === "upcoming",
         ).length;
 
-        // Count active subscriptions
         const activeSubscriptions = payments.filter(
           (p: any) =>
             p.paymentType === "subscription" &&
@@ -80,7 +78,6 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             ? `${activeSubscriptions.length} Active Plan${activeSubscriptions.length > 1 ? "s" : ""}`
             : null;
 
-        // Classes booked this month
         const now = new Date();
         const classesBookedThisMonth = payments.filter((p: any) => {
           const date = new Date(p.createdAt);
@@ -91,7 +88,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
           );
         }).length;
 
-        // ✅ Member capacity = their enrolled classes vs total available
+        // Member capacity = their enrolled classes vs total available
         const totalAvailableClasses = classes.length;
         const myEnrolledClasses = payments.filter(
           (p: any) => p.status === "completed",
@@ -127,18 +124,16 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         const paymentsData = await paymentsRes.json();
         const payments = paymentsData.data ?? [];
 
-        // ⚠️ declared once here, used below by both revenue and
-        // recentSignups — was missing in a prior draft, which would
-        // have thrown "now is not defined" in this branch.
+        // Declared once and shared by the revenue and recentSignups
+        // calculations below.
         const now = new Date();
 
-        // Total members
         const totalMembers = users.filter(
           (u: any) => u.role === "member",
         ).length;
 
-        // ✅ Real recent signups — reuses the `users` fetch above
-        // instead of hitting the API again. Sorted newest-first, top 5.
+        // Recent signups reuse the `users` fetch above instead of calling the
+        // API again: newest first, top 5.
         const recentSignups = users
           .filter((u: any) => u.role === "member")
           .sort(
@@ -154,15 +149,13 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             role: u.role,
           }));
 
-        // Active classes
         const activeClasses = classes.filter(
           (cls: any) => cls.status === "upcoming" || cls.status === "ongoing",
         ).length;
 
-        // Monthly revenue — rolling last 30 days, not "this calendar
-        // month". A calendar-month filter zeroes out at the start of
-        // every month even if plenty of revenue came in a few days ago
-        // (e.g. late June payments wouldn't count once July starts).
+        // Monthly revenue is a rolling last 30 days, not the calendar month. A
+        // calendar-month filter drops to zero at the start of every month even
+        // when plenty of revenue arrived a few days earlier.
         const thirtyDaysAgo = new Date(now);
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const revenue = payments
@@ -187,7 +180,6 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             .reduce((sum: number, p: any) => sum + p.amount, 0);
         });
 
-        // Capacity usage
         const totalCapacity = classes.reduce(
           (sum: number, cls: any) => sum + (cls.capacity ?? 0),
           0,
@@ -201,7 +193,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             ? Math.round((totalEnrolled / totalCapacity) * 100)
             : 0;
 
-        // ✅ Ongoing first, then upcoming, max 5
+        // Ongoing first, then upcoming, max 5
         const upcomingClasses = [
           ...classes.filter((cls: any) => cls.status === "ongoing"),
           ...classes.filter((cls: any) => cls.status === "upcoming"),
@@ -246,8 +238,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         const classesData = await classesRes.json();
         const classes = classesData.data ?? [];
 
-        // ✅ Use enrolled (from transform) not members.length
-        // ✅ Count unique members across all classes
+        // Use `enrolled` (from transformClass) instead of members.length.
         const allMemberIds = classes.flatMap((cls: any) => cls.memberIds ?? []);
         const totalMembers = new Set(allMemberIds).size;
 
@@ -274,7 +265,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
         ]
           .slice(0, 5)
           .map((cls: any) => ({
-            id: cls.id, // ✅ was cls._id.toString()
+            id: cls.id,
             name: cls.name,
             time: new Date(cls.schedule).toLocaleTimeString("en-US", {
               hour: "2-digit",
@@ -289,7 +280,7 @@ export const useDashboard = (userRole: UserRole): UseDashboardReturn => {
             }),
             trainer: cls.trainer,
             capacity: cls.capacity ?? 0,
-            enrolled: cls.enrolled ?? 0, // ✅ use enrolled directly
+            enrolled: cls.enrolled ?? 0,
             status: cls.status,
           }));
 

@@ -76,7 +76,6 @@ export function AdminMemberDetailsModal({
         className="bg-white rounded-xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
@@ -100,7 +99,6 @@ export function AdminMemberDetailsModal({
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Profile details */}
           <div>
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
               Profile
@@ -151,7 +149,6 @@ export function AdminMemberDetailsModal({
             </div>
           </div>
 
-          {/* Classes joined */}
           <div>
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
               <TbCalendar className="w-4 h-4" />

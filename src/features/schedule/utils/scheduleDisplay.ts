@@ -1,10 +1,10 @@
 /**
- * Formats how a class's schedule should read, based on whether it's a
- * one-off event or a recurring series:
- * - One-off: a specific calendar date makes sense — it happens once.
- * - Recurring (daily/weekly): a specific date is misleading, since the
- *   class keeps happening indefinitely. Shows the recurrence pattern
- *   instead (e.g. "Every Mon, Wed, Fri" or "Every day").
+ * Formats how a class's schedule reads, depending on whether it is a one-off
+ * or a recurring series:
+ * - One-off: a specific calendar date, because it happens once.
+ * - Recurring (daily or weekly): the recurrence pattern (for example
+ *   "Every Mon, Wed, Fri" or "Every day"), because a specific date is
+ *   misleading for a class that keeps happening.
  */
 export function getScheduleDisplay(classData: {
   schedule: string;
@@ -32,9 +32,9 @@ export function getScheduleDisplay(classData: {
     return `Every day • ${time}`;
   }
 
-  // Weekly — list the actual selected days. ("monthly" recurrence
-  // exists on the model but isn't offered in the create/edit UI;
-  // falls through to this same day-list branch as a safe default.)
+  // Weekly: list the selected days. "monthly" exists on the model but is not
+  // offered in the create/edit UI; it falls through to this branch as a safe
+  // default.
   const days = classData.recurrenceDays ?? [];
   if (days.length === 0) {
     return `Weekly • ${time}`;

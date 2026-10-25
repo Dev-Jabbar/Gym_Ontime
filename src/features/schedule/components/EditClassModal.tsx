@@ -45,9 +45,8 @@ const DAYS_OF_WEEK = [
   { value: "sunday", label: "Sun" },
 ];
 
-// Same fix as CreateClassModal — session counts now reflect how the
-// class actually recurs, instead of assuming a fixed 4/week for
-// everything regardless of its real schedule.
+// Session counts reflect how the class actually recurs, as in
+// CreateClassModal, instead of assuming a fixed 4 sessions a week.
 const getSessionsPerWeek = (
   recurrence: "none" | "daily" | "weekly",
   selectedDays: string[],
@@ -84,8 +83,8 @@ export function EditClassModal({
     classData.recurrenceDays ?? [],
   );
 
-  // Same trainer-list fetch as CreateClassModal, keyed by User._id so
-  // it matches classData.trainer.userId for pre-selection.
+  // The same trainer-list fetch as CreateClassModal, keyed by User._id so it
+  // matches classData.trainer.userId for pre-selection.
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
   const [trainersError, setTrainersError] = useState<string | null>(null);
@@ -139,9 +138,9 @@ export function EditClassModal({
       capacity: classData.capacity,
       recurrence:
         (classData.recurrence as "none" | "daily" | "weekly") ?? "none",
-      // Pre-select using the trainer's User._id, matching the dropdown's
-      // option values — classData.trainer.id is the TrainerProfile._id,
-      // which would not match any option here.
+      // Pre-select by the trainer's User._id, which is what the dropdown
+      // option values use. classData.trainer.id is the TrainerProfile id and
+      // would not match any option.
       trainer: classData.trainer.userId ?? "",
       oneTime: classData.pricing.oneTime ?? 0,
       weekly: classData.pricing.weekly ?? 0,
@@ -169,10 +168,9 @@ export function EditClassModal({
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
-    // Changing which days a class meets changes its real session count,
-    // which is exactly what the subscription prices are supposed to be
-    // based on — so this counts as an explicit change, same as editing
-    // the per-session price directly.
+    // Changing which days a class meets changes its real session count, which
+    // the subscription prices are based on, so it counts as an explicit price
+    // change, like editing the per-session price directly.
     setAutoCalculated(true);
   };
 
@@ -221,9 +219,8 @@ export function EditClassModal({
             capacity: Number(data.capacity),
             recurrence: data.recurrence,
             recurrenceDays: data.recurrence === "weekly" ? selectedDays : [],
-            // Only send trainer if it actually changed from the current
-            // one — avoids an unnecessary lookup/resolution on the
-            // backend for a no-op update.
+            // Send the trainer only if it changed, to avoid an unnecessary
+            // lookup on the backend for a no-op update.
             ...(data.trainer !== classData.trainer.userId && {
               trainer: data.trainer,
             }),
@@ -296,7 +293,6 @@ export function EditClassModal({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          {/* Name */}
           <div>
             <label className={labelClass}>Class Name *</label>
             <input
@@ -307,7 +303,6 @@ export function EditClassModal({
             {errors.name && <p className={errorClass}>{errors.name.message}</p>}
           </div>
 
-          {/* Description */}
           <div>
             <label className={labelClass}>Description</label>
             <textarea
@@ -317,9 +312,8 @@ export function EditClassModal({
             />
           </div>
 
-          {/* Class Image — optional. Note: this build only supports
-              adding/replacing an image, not clearing one back to none,
-              once it's been set — a small follow-up if that's needed. */}
+          {/* Class image: optional. An image can be added or replaced, but not
+              cleared once set. */}
           <div>
             <label className={labelClass}>Class Image (optional)</label>
             {imageUrl ? (
@@ -365,7 +359,6 @@ export function EditClassModal({
             {imageError && <p className={errorClass}>{imageError}</p>}
           </div>
 
-          {/* Trainer */}
           <div>
             <label className={labelClass}>Trainer *</label>
             {trainersLoading ? (
@@ -396,7 +389,6 @@ export function EditClassModal({
             )}
           </div>
 
-          {/* Schedule & Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Schedule *</label>
@@ -420,7 +412,6 @@ export function EditClassModal({
             </div>
           </div>
 
-          {/* Recurrence */}
           <div>
             <label className={labelClass}>Recurrence</label>
             <select {...register("recurrence")} className={inputClass}>
@@ -430,7 +421,7 @@ export function EditClassModal({
             </select>
           </div>
 
-          {/* Days of week — only show when weekly */}
+          {/* Days of the week: only shown for weekly classes */}
           {recurrence === "weekly" && (
             <div>
               <label className={labelClass}>Select Days *</label>
@@ -458,7 +449,6 @@ export function EditClassModal({
             </div>
           )}
 
-          {/* Capacity */}
           <div>
             <label className={labelClass}>Capacity *</label>
             <input
@@ -469,7 +459,6 @@ export function EditClassModal({
             />
           </div>
 
-          {/* Per Session Price */}
           <div>
             <label className={labelClass}>Per Session Price (₦) *</label>
             <input
@@ -498,7 +487,7 @@ export function EditClassModal({
             </p>
           </div>
 
-          {/* ✅ Subscription prices — only for recurring classes */}
+          {/* Subscription prices: only for recurring classes */}
           {recurrence !== "none" && (
             <div>
               <label className={labelClass}>

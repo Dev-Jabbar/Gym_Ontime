@@ -77,7 +77,6 @@ export function ClassDetailsModal({
         className="bg-white rounded-xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div>
             <h2 className="text-xl font-bold text-gray-900">
@@ -178,7 +177,6 @@ export function ClassDetailsModal({
             )}
           </div>
 
-          {/* Members */}
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
               Members ({members.length}/{classData.capacity})

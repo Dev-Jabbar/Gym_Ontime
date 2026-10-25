@@ -17,7 +17,7 @@ export const formatDate = (dateString: string): string => {
 };
 
 export const formatFullDate = (date: Date | null): string => {
-  if (!date) return "All Classes"; // ✅ handle null
+  if (!date) return "All Classes"; // handle null
   return date.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",

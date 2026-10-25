@@ -21,8 +21,6 @@ import Field from "@/components/Field";
 import PasswordStrength from "@/components/PasswordStrength";
 import Toggle from "@/components/Toggle";
 
-/* ───────── Schema ───────── */
-
 const registerSchema = z
   .object({
     fullName: z.string().min(2).max(60),
@@ -42,8 +40,6 @@ const FEATURES = [
   { icon: TrendingUp, label: "Track your progress" },
   { icon: Users, label: "Connect with trainers" },
 ];
-
-/* ───────── Page ───────── */
 
 export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
@@ -103,8 +99,7 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
       <div className="w-full max-w-5xl flex flex-col md:flex-row rounded-3xl overflow-hidden bg-white shadow-xl">
-        {/* LEFT — orange gradient, same styling as the dashboard's
-            Quick Actions panel, for visual consistency across the app */}
+        {/* Left panel: orange gradient matching the dashboard's Quick Actions panel. */}
         <div className="hidden md:flex md:w-[42%] flex-col justify-between p-10 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
           <div className="flex items-center gap-2 font-bold">
             <Dumbbell className="w-5 h-5" />
@@ -132,7 +127,6 @@ export default function RegisterPage() {
           <div />
         </div>
 
-        {/* RIGHT */}
         <div className="flex-1 p-6 md:p-10">
           {done ? (
             <div className="py-10 text-center">

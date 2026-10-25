@@ -45,9 +45,7 @@ export const useProfile = (): UseProfileReturn => {
           },
         );
       } else if (user.role === "admin") {
-        // ✅ Previously this branch didn't exist at all — admins got
-        // profile: null unconditionally and had no way to see or
-        // update their own avatar.
+        // Admins have an AdminProfile too (avatar only), so load it.
         profileRes = await fetch(
           `${getApiUrl()}/admins/me`,
           {
@@ -156,9 +154,8 @@ export const useProfile = (): UseProfileReturn => {
         });
       }
 
-      // ✅ Update admin profile — new branch, previously missing.
-      // AdminProfile only has `avatar`, so this is intentionally the
-      // smallest of the three branches.
+      // Update the admin profile. AdminProfile only has `avatar`, so this is
+      // the smallest of the three branches.
       if (user.role === "admin") {
         await fetch(`${getApiUrl()}/admins/me`, {
           method: "PUT",
@@ -172,11 +169,9 @@ export const useProfile = (): UseProfileReturn => {
 
       await fetchProfile();
 
-      // ✅ Sync the Zustand store too — without this, Header (which
-      // reads from the store, not from this hook's `profile` state)
-      // keeps showing the old avatar until a full page reload forces
-      // a fresh /users/me fetch. This makes the change visible
-      // immediately, everywhere the avatar is shown.
+      // Sync the Zustand store too. The Header reads from the store, not from
+      // this hook's `profile` state, so without this it would keep showing the
+      // old avatar until a full reload.
       if (data.avatar !== undefined) {
         useUserStore.getState().updateAvatar(data.avatar);
       }

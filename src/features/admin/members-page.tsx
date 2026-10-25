@@ -18,8 +18,8 @@ export function AdminMembersPage() {
 
   const [search, setSearch] = useState("");
 
-  // Client-side filter — the full list is already fetched, so there's
-  // no need for a search API call. Matches on name or email.
+  // Client-side filter on name or email. The full list is already fetched, so
+  // no search request is needed.
   const filteredMembers = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return members;
@@ -58,7 +58,6 @@ export function AdminMembersPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8 mt-20">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             Manage Members
@@ -70,7 +69,6 @@ export function AdminMembersPage() {
           </p>
         </div>
 
-        {/* Search */}
         <div className="relative mb-6 max-w-md">
           <TbSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -82,7 +80,6 @@ export function AdminMembersPage() {
           />
         </div>
 
-        {/* Members Grid */}
         {filteredMembers.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-8 text-center text-gray-500">
             {members.length === 0
